@@ -2,13 +2,15 @@
 
 The small network below has fixed demonstration weights: it is deliberately
 labelled as a policy score, not a trained RL model.  Feasibility is decided
-first by the rule layer; the policy can only rank feasible candidates.  This
-keeps the same action-mask contract needed by a future trained DCMRTA policy.
+first by the rule layer; the policy can only rank feasible candidates.  Each
+task then gets three logit heads (能力, 续航, 现场).  Each head proposes one
+device combination, and the combination with the highest joint logit is sent.
 """
 
 from __future__ import annotations
 
-from math import exp
+import json
+from math import exp, hypot
 
 from platform_app.services.planning_service import evaluate_candidate
 
@@ -42,6 +44,16 @@ OUTPUT_BIAS = -6.15
 THRESHOLD = 0.80
 SUPPORT_FLOOR = 0.60
 MAX_TEAM = 4
+# Three dispatch heads. Each emits one logit per feasible device.
+# 能力: type and sensor fit. 续航: battery left after the route. 现场: wind, rain, terrain.
+HEADS = ("能力", "续航", "现场")
+# Feature order: FEATURE_NAMES, then margin, proximity, dog, robot, signal, switchgear, ios.
+HEAD_WEIGHTS = (
+    (0.0, 0.0, 0.1, 0.0, 0.15, 2.5, 1.4, 2.0, 0.1, -0.15, -0.15, 0.2, 0.0, 0.35, 1.15, 1.1, -2.4, 1.15),
+    (0.0, 0.0, 0.1, 3.1, 0.45, 0.15, 0.1, 0.15, 0.0, -0.1, -0.1, 2.4, 0.05, 0.0, 0.0, 0.0, 0.0, 0.0),
+    (-1.2, -1.4, 1.0, 0.15, 0.1, 0.1, 0.6, 0.1, -0.15, -2.2, -2.4, 0.1, 2.8, 0.4, 0.05, 1.35, -0.15, -0.75),
+)
+HEAD_BIAS = (-1.15, -2.35, -0.85)
 
 
 def feasibility_mask(resource: dict, result, used_ids: set[str] | None = None) -> dict[str, bool]:
@@ -134,8 +146,8 @@ def score_candidates(task: dict, resources: list[dict], environment: dict, used_
         rank = 0.0 if blocked else round(0.62 * probability + 0.33 * (float(result.score) / 100) + 0.05 * priority, 6)
         vendor = str(resource.get("vendor") or "")
         caps = set((task.get("requirements") or {}).get("capabilities") or [])
-        # D200 is the switch-operation unit. Routine camera and gas rounds use the inspection robots first.
-        if rank and resource.get("type") == "robot" and "D200" in vendor and caps & {"thermal", "gas", "rgb_camera", "aerial_camera"}:
+        # 开关室操作机器人负责操作，例行表计、测温和气体巡检优先派室外轮式巡检机器人。
+        if rank and resource.get("type") == "robot" and "开关室操作" in vendor and caps & {"thermal", "gas", "rgb_camera", "aerial_camera"}:
             rank = round(rank * 0.9, 6)
         scored.append(
             {
@@ -171,68 +183,242 @@ def crew_size(task: dict, environment: dict) -> int:
     return min(size, MAX_TEAM)
 
 
-def choose_team(task: dict, resources: list[dict], environment: dict, used_ids: set[str] | None = None, floor: float = SUPPORT_FLOOR) -> list[dict]:
-    ranked = [row for row in score_candidates(task, resources, environment, used_ids) if not row["hard_blocked"]]
-    ranked.sort(key=lambda row: (-row["rank"], -row["probability"], str(row["resource"].get("id"))))
-    primary = [row for row in ranked if row["probability"] >= THRESHOLD]
-    limit = crew_size(task, environment)
+# margin, proximity, dog, robot, signal, switchgear, ios
+HEAD_EXTRA = ("margin", "proximity", "dog", "robot", "signal", "switchgear", "ios")
+_HEAD_WIDTH = len(FEATURE_NAMES) + len(HEAD_EXTRA)
+
+
+def _softmax(values: list[float]) -> list[float]:
+    if not values:
+        return []
+    peak = max(values)
+    lifted = [exp(value - peak) for value in values]
+    total = sum(lifted) or 1.0
+    return [item / total for item in lifted]
+
+
+def _task_anchor(task: dict) -> tuple[float, float]:
+    route = task.get("route") or {}
+    points = route.get("waypoints") or []
+    if points:
+        return (
+            sum(float(point.get("x") or 0) for point in points) / len(points),
+            sum(float(point.get("y") or 0) for point in points) / len(points),
+        )
+    start = route.get("start") or {}
+    return float(start.get("x") or 50), float(start.get("y") or 50)
+
+
+def head_features(task: dict, resource: dict, result, base: list[float]) -> list[float]:
+    """Per-device input for the three dispatch heads."""
+    power_after = result.battery_after_pct
+    margin = 0.82 if power_after is None else _clip((float(power_after) + 15) / 100)
+    anchor_x, anchor_y = _task_anchor(task)
+    position = resource.get("position") or {}
+    distance = hypot(float(position.get("x", 50)) - anchor_x, float(position.get("y", 50)) - anchor_y)
+    proximity = _clip(1 - distance / 90)
+    kind = resource.get("type")
+    vendor = str(resource.get("vendor") or "")
+    required = set((task.get("requirements") or {}).get("capabilities") or [])
+    outdoor_job = task.get("type") != "drone" and bool(required & {"thermal", "gas", "rgb_camera", "aerial_camera"})
+    switchgear = 1.0 if outdoor_job and "开关室操作" in vendor else 0.0
+    signal = _clip(float(resource.get("signal_percent") or 0) / 100)
+    ios = 1.0 if str(resource.get("protocol") or "") == "iOS" else 0.0
+    return [
+        *base,
+        margin,
+        proximity,
+        1.0 if kind == "dog" else 0.0,
+        1.0 if kind == "robot" else 0.0,
+        signal,
+        switchgear,
+        ios,
+    ]
+
+
+def head_logits(features: list[float]) -> list[float]:
+    logits = []
+    for weights, bias in zip(HEAD_WEIGHTS, HEAD_BIAS):
+        logits.append(round(bias + sum(weight * value for weight, value in zip(weights, features)), 4))
+    return logits
+
+
+def _pick_crew(ordered: list[dict], size: int) -> list[dict]:
     picked = []
     seen_types = set()
-    for row in primary:
+    for row in ordered:
         kind = row["resource"].get("type")
         if kind in seen_types:
             continue
         picked.append(row)
         seen_types.add(kind)
-        if len(picked) >= limit:
+        if len(picked) >= size:
             return picked
-    for row in primary:
+    for row in ordered:
         if row in picked:
             continue
         picked.append(row)
-        if len(picked) >= limit:
-            return picked
-    for row in ranked:
-        if row in picked or row["probability"] < floor:
-            continue
-        picked.append(row)
-        if len(picked) >= limit:
+        if len(picked) >= size:
             break
-    if not picked and task.get("type") == "drone":
-        for row in ranked:
-            if row["resource"].get("type") == "drone" and (row["resource"].get("power_percent") or 0) >= 45:
-                picked.append(row)
-                break
     return picked
 
 
-def suggest_schemes(task: dict, resources: list[dict], environment: dict, used_ids: set[str] | None = None, limit: int = 3) -> list[dict]:
-    """Highest-scoring distinct crews for one task. The first crew is the one to send."""
-    taken = set(used_ids or [])
-    schemes = []
-    floors = (SUPPORT_FLOOR, 0.45, 0.35)
-    for index in range(limit):
-        team = choose_team(task, resources, environment, taken, floors[min(index, len(floors) - 1)])
-        if not team:
-            break
-        score = round(sum(row["rank"] for row in team) / len(team) * 100, 1)
-        schemes.append(
+def _member_public(row: dict) -> dict:
+    resource = row["resource"]
+    return {
+        "id": resource.get("id"),
+        "name": resource.get("name"),
+        "type": resource.get("type"),
+        "logits": list(row["logits"]),
+    }
+
+
+def combination_policy(task: dict, resources: list[dict], environment: dict, used_ids: set[str] | None = None) -> dict:
+    """Score one task with three logit heads and choose a device combination.
+
+    Hard-blocked devices stay at zero and cannot enter a combination.  Each
+    head ranks the feasible devices and proposes one crew.  The crew whose
+    members have the highest sum of all three logits is the one to send.
+    """
+    from platform_app.services.planning_service import plan_route
+
+    feasible = []
+    for row in score_candidates(task, resources, environment, used_ids):
+        if row["hard_blocked"]:
+            continue
+        try:
+            plan_route(task, row["resource"])
+        except ValueError as exc:
+            row["hard_blocked"].append(str(exc))
+            continue
+        features = head_features(task, row["resource"], row["result"], row["features"])
+        if len(features) != _HEAD_WIDTH:
+            raise RuntimeError("调度头输入宽度与权重不一致")
+        row["logits"] = head_logits(features)
+        feasible.append(row)
+    size = crew_size(task, environment)
+    by_head = []
+    for index, name in enumerate(HEADS):
+        ordered = sorted(feasible, key=lambda row: (-row["logits"][index], str(row["resource"].get("id"))))
+        by_head.append(_pick_crew(ordered, size))
+    probabilities = list(zip(*(_softmax([row["logits"][index] for row in feasible]) for index in range(len(HEADS))))) if feasible else []
+    for row, probs in zip(feasible, probabilities):
+        row["head_probs"] = [round(value, 4) for value in probs]
+    combinations = []
+    for name, members in zip(HEADS, by_head):
+        head_index = HEADS.index(name)
+        head_logit = round(sum(row["logits"][head_index] for row in members), 4) if members else None
+        joint = round(sum(sum(row["logits"]) for row in members), 4) if members else None
+        combinations.append(
             {
-                "score": score,
-                "members": [
-                    {
-                        "id": row["resource"].get("id"),
-                        "name": row["resource"].get("name"),
-                        "type": row["resource"].get("type"),
-                        "score": round(row["rank"] * 100, 1),
-                    }
-                    for row in team
-                ],
+                "head": name,
+                "logit": head_logit,
+                "joint": joint,
+                "selected": False,
+                "members": [_member_public(row) for row in members],
+                "_rows": members,
             }
         )
-        taken.update(row["resource"].get("id") for row in team)
-    schemes.sort(key=lambda item: (-item["score"], -len(item["members"])))
-    return schemes
+    chosen = None
+    chosen_key = None
+    for combo in combinations:
+        if combo["joint"] is None:
+            continue
+        key = (combo["joint"], -HEADS.index(combo["head"]))
+        if chosen_key is None or key > chosen_key:
+            chosen_key = key
+            chosen = combo
+    if chosen is not None:
+        chosen["selected"] = True
+    ranked_devices = sorted(feasible, key=lambda row: (-sum(row["logits"]), str(row["resource"].get("id"))))
+    visible = []
+    seen_ids = set()
+    for row in list(chosen["_rows"] if chosen else []) + ranked_devices:
+        identity = row["resource"].get("id")
+        if identity in seen_ids:
+            continue
+        seen_ids.add(identity)
+        visible.append(row)
+        if len(visible) >= 6:
+            break
+    public_combinations = []
+    schemes = []
+    for combo in combinations:
+        item = {key: value for key, value in combo.items() if key != "_rows"}
+        public_combinations.append(item)
+        schemes.append(
+            {
+                "task_id": task.get("id"),
+                "task_name": task.get("name"),
+                "head": combo["head"],
+                "score": combo["joint"],
+                "selected": combo["selected"],
+                "members": combo["members"],
+            }
+        )
+    return {
+        "rows": list(chosen["_rows"]) if chosen else [],
+        "selected_head": chosen["head"] if chosen else None,
+        "schemes": schemes,
+        "public": {
+            "task_id": task.get("id"),
+            "task_name": task.get("name"),
+            "selected_head": chosen["head"] if chosen else None,
+            "fallback": False,
+            "heads": list(HEADS),
+            "combinations": public_combinations,
+            "devices": [
+                {
+                    "id": row["resource"].get("id"),
+                    "name": row["resource"].get("name"),
+                    "type": row["resource"].get("type"),
+                    "logits": list(row["logits"]),
+                    "probs": list(row.get("head_probs") or []),
+                }
+                for row in visible
+            ],
+        },
+    }
+
+
+def load_policies() -> list[dict]:
+    path = _policy_path()
+    try:
+        value = json.loads(path.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return []
+    return [row for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+
+
+def replace_policies(policies: list[dict]) -> None:
+    path = _policy_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(list(policies), ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def merge_policies(policies: list[dict]) -> None:
+    by_id = {row.get("task_id"): row for row in load_policies() if row.get("task_id")}
+    for row in policies:
+        if row.get("task_id"):
+            by_id[row["task_id"]] = row
+    replace_policies(list(by_id.values()))
+
+
+def _policy_path():
+    from platform_app.config import DATA_DIR
+
+    return DATA_DIR / "dispatch_policies.json"
+
+
+def choose_team(task: dict, resources: list[dict], environment: dict, used_ids: set[str] | None = None, floor: float = SUPPORT_FLOOR) -> list[dict]:
+    del floor
+    return combination_policy(task, resources, environment, used_ids)["rows"]
+
+
+def suggest_schemes(task: dict, resources: list[dict], environment: dict, used_ids: set[str] | None = None, limit: int = 3) -> list[dict]:
+    """Three head-level crews for one task. The selected crew is the one to send."""
+    del limit
+    return combination_policy(task, resources, environment, used_ids)["schemes"]
 
 
 def team_reason(picks: list[dict], environment: dict) -> str:

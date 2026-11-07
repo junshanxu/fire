@@ -449,7 +449,7 @@ def _restore_standby(assignments: list[dict], resources: list[dict]) -> None:
 
 
 def build_v1_plan(tasks: list[dict], resources: list[dict], environment: dict) -> dict:
-    from platform_app.services.neural_dispatch import choose_team, score_candidates, suggest_schemes, team_reason
+    from platform_app.services.neural_dispatch import combination_policy, score_candidates, team_reason
 
     pending = [task for task in tasks if task.get("status") in {"待调度", "待派发"}]
     pending.sort(key=lambda task: (0 if _urgent(task) else 1, str(task.get("id"))))
@@ -458,6 +458,7 @@ def build_v1_plan(tasks: list[dict], resources: list[dict], environment: dict) -
     assignments = []
     audit = []
     schemes = []
+    policies = []
     for task in pending:
         scored = score_candidates(task, resources, environment, used_resources)
         for item in scored:
@@ -480,15 +481,18 @@ def build_v1_plan(tasks: list[dict], resources: list[dict], environment: dict) -
                 "policy_source": item["policy_source"],
             })
         blocked_ids = set(used_resources) if _urgent(task) else set(used_resources) | reserve
-        for scheme in suggest_schemes(task, resources, environment, used_resources):
-            scheme["task_id"] = task.get("id")
-            scheme["task_name"] = task.get("name")
-            schemes.append(scheme)
-        team = choose_team(task, resources, environment, blocked_ids)
+        policy = combination_policy(task, resources, environment, blocked_ids)
+        team = policy["rows"]
         fallback = False
         if not team and reserve - used_resources:
-            team = choose_team(task, resources, environment, used_resources)
+            policy = combination_policy(task, resources, environment, used_resources)
+            team = policy["rows"]
             fallback = bool(team)
+        public = policy["public"]
+        public["fallback"] = fallback
+        policies.append(public)
+        for scheme in policy["schemes"]:
+            schemes.append(scheme)
         placed = []
         for item in team:
             try:
@@ -499,7 +503,8 @@ def build_v1_plan(tasks: list[dict], resources: list[dict], environment: dict) -
             placed.append((item, route))
         if placed:
             names = "、".join(item["resource"].get("name") or item["resource"].get("id") for item, _route in placed)
-            sentence = f"兜底派出 {names}" if fallback else team_reason([item for item, _route in placed], environment)
+            head = policy.get("selected_head") or "组合"
+            sentence = f"兜底派出 {names}" if fallback else f"三头打分取「{head}」组合。" + team_reason([item for item, _route in placed], environment)
             for item, route in placed:
                 assignments.append(_pack_assignment(task, item["resource"], item["result"], route, sentence, probability=item["probability"]))
                 used_resources.add(item["resource"].get("id"))
@@ -538,10 +543,11 @@ def build_v1_plan(tasks: list[dict], resources: list[dict], environment: dict) -
     from platform_app.services.substation_site import CENTER_LAT, CENTER_LON, METERS_PER_UNIT, site_geometry
     return {
         "version": "V1",
-        "algorithm": "硬约束过滤 → 可解释评分 → 贪心多设备 VRP 分配 → 现场改派 → A* 路径规划",
+        "algorithm": "硬约束过滤 → 三头 logits（能力 / 续航 / 现场）→ 组合打分派出 → A* 路径规划",
         "environment": environment,
         "map_frame": {'center_lat':CENTER_LAT,'center_lon':CENTER_LON,'meters_per_unit':METERS_PER_UNIT,'site':site_geometry()},
         "assignments": assignments,
+        "policies": policies,
         "schemes": schemes,
         "standby": [
             {"id": row.get("id"), "name": row.get("name"), "type": row.get("type")}

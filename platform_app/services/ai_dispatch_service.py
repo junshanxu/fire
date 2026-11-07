@@ -1,5 +1,6 @@
 """Qwen dispatch planner."""
 import json
+import os
 from urllib.error import HTTPError,URLError
 from urllib.request import Request,urlopen
 from platform_app.services.sample_data_service import get_overview
@@ -8,7 +9,7 @@ from platform_app.services.dispatch_service import TASK_TYPE_FOR_RESOURCE,active
 def U(h):
  h=h.replace(" ","")
  return "".join(chr(int(h[i:i+4],16)) for i in range(0,len(h),4))
-API_KEY='sk-ws-H.YRIYXYL.dMPX.MEQCIEB2rwMhlqH2mEnGOuufKRMVTsDt7kVOgpCj3JzQQv9dAiAgpRvePUqcNPd_kwgBLzSR4i8QkVRGimf5IYdMxrZ3Rw'
+API_KEY=os.getenv("DASHSCOPE_API_KEY", "").strip()
 ENDPOINT="https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 MODEL="qwen-plus"
 def parse_plan(text):
@@ -22,6 +23,7 @@ def parse_plan(text):
  if not isinstance(obj,dict) or not isinstance(obj.get("assignments"),list): raise RuntimeError("Invalid Qwen plan format")
  return obj
 def create_ai_dispatch_plan():
+ if not API_KEY: raise RuntimeError("DASHSCOPE_API_KEY is not configured")
  tasks=list_tasks(); resources=get_overview().get("resources",[])
  pending=[x for x in tasks if x.get("status") in (U("5f858c035ea6"),U("5f856d5353d1"))]
  available=[x for x in resources if x.get("status") in (U("5f85547d"),U("57287ebf"))]
@@ -50,6 +52,7 @@ def create_ai_dispatch_plan():
 
 
 def _qwen_json(system_prompt: str, payload: dict) -> dict:
+ if not API_KEY: raise RuntimeError("DASHSCOPE_API_KEY is not configured")
  body={"model":MODEL,"temperature":0.2,"messages":[{"role":"system","content":system_prompt},{"role":"user","content":json.dumps(payload,ensure_ascii=False)}]}
  req=Request(ENDPOINT,data=json.dumps(body).encode("utf-8"),headers={"Authorization":"Bearer "+API_KEY,"Content-Type":"application/json"},method="POST")
  try:

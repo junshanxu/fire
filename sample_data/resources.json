@@ -85,8 +85,8 @@
   },
   {
     "id": "ROBOT-01",
-    "name": "亿嘉和 E100 · 01",
-    "vendor": "亿嘉和 E100",
+    "name": "申昊 L1 Pro · 01",
+    "vendor": "申昊 L1 Pro",
     "type": "robot",
     "station": "dispatch-pool",
     "task": "待命",
@@ -97,8 +97,8 @@
   },
   {
     "id": "ROBOT-02",
-    "name": "亿嘉和 E100 · 02",
-    "vendor": "亿嘉和 E100",
+    "name": "申昊 L1 Pro · 02",
+    "vendor": "申昊 L1 Pro",
     "type": "robot",
     "station": "dispatch-pool",
     "task": "待命",
@@ -109,8 +109,8 @@
   },
   {
     "id": "ROBOT-03",
-    "name": "亿嘉和 E300 · 01",
-    "vendor": "亿嘉和 E300",
+    "name": "申昊 L1 Pro · 03",
+    "vendor": "申昊 L1 Pro",
     "type": "robot",
     "station": "dispatch-pool",
     "task": "待命",
@@ -121,8 +121,8 @@
   },
   {
     "id": "ROBOT-04",
-    "name": "亿嘉和 E100 · 03",
-    "vendor": "亿嘉和 E100",
+    "name": "申昊 L1 Pro · 04",
+    "vendor": "申昊 L1 Pro",
     "type": "robot",
     "station": "dispatch-pool",
     "task": "待命",
@@ -133,8 +133,8 @@
   },
   {
     "id": "ROBOT-05",
-    "name": "亿嘉和 E300 · 02",
-    "vendor": "亿嘉和 E300",
+    "name": "申昊 L1 Pro · 05",
+    "vendor": "申昊 L1 Pro",
     "type": "robot",
     "station": "dispatch-pool",
     "task": "充电桩 A",
@@ -145,55 +145,55 @@
   },
   {
     "id": "DOG-01",
-    "name": "宇树 B2 · 01",
+    "name": "云深处 绝影 X30 · 01",
     "type": "dog",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "64%",
-    "protocol": "DDS",
+    "protocol": "TCP",
     "access": "边缘网关",
-    "vendor": "宇树 B2"
+    "vendor": "云深处 绝影 X30"
   },
   {
     "id": "DOG-02",
-    "name": "宇树 B2 · 02",
+    "name": "云深处 绝影 X30 · 02",
     "type": "dog",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "88%",
-    "protocol": "DDS",
+    "protocol": "TCP",
     "access": "边缘网关",
-    "vendor": "宇树 B2"
+    "vendor": "云深处 绝影 X30"
   },
   {
     "id": "DOG-03",
-    "name": "宇树 B2 · 03",
+    "name": "云深处 绝影 X30 · 03",
     "type": "dog",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "79%",
-    "protocol": "DDS",
+    "protocol": "TCP",
     "access": "边缘网关",
-    "vendor": "宇树 B2"
+    "vendor": "云深处 绝影 X30"
   },
   {
     "id": "DOG-04",
-    "name": "宇树 B2 · 04",
+    "name": "云深处 绝影 X30 · 04",
     "type": "dog",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "74%",
-    "protocol": "DDS",
+    "protocol": "TCP",
     "access": "边缘网关",
-    "vendor": "宇树 B2"
+    "vendor": "云深处 绝影 X30"
   },
   {
     "id": "DOG-05",
-    "name": "云深处 X30 · 01",
+    "name": "云深处 绝影 X30 · 05",
     "type": "dog",
     "station": "dispatch-pool",
     "task": "东侧链路中断",
@@ -205,68 +205,68 @@
   },
   {
     "id": "DRONE-01",
-    "name": "大疆 Matrice 350 RTK · 01",
+    "name": "申昊 空中自主巡视 · 01",
     "type": "drone",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "47%",
-    "protocol": "DJI Cloud API",
+    "protocol": "4G/5G",
     "access": "边缘网关",
-    "vendor": "大疆 Matrice 350 RTK"
+    "vendor": "申昊 空中自主巡视系统"
   },
   {
     "id": "DRONE-02",
-    "name": "大疆 Matrice 350 RTK · 02",
+    "name": "申昊 空中自主巡视 · 02",
     "type": "drone",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "94%",
-    "protocol": "DJI Cloud API",
+    "protocol": "4G/5G",
     "access": "边缘网关",
-    "vendor": "大疆 Matrice 350 RTK"
+    "vendor": "申昊 空中自主巡视系统"
   },
   {
     "id": "DRONE-03",
-    "name": "大疆 Matrice 30T · 01",
+    "name": "申昊 空中自主巡视 · 03",
     "type": "drone",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "76%",
-    "protocol": "DJI Cloud API",
+    "protocol": "4G/5G",
     "access": "边缘网关",
-    "vendor": "大疆 Matrice 30T"
+    "vendor": "申昊 空中自主巡视系统"
   },
   {
     "id": "DRONE-04",
-    "name": "大疆 Matrice 30T · 02",
+    "name": "申昊 空中自主巡视 · 04",
     "type": "drone",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "82%",
-    "protocol": "DJI Cloud API",
+    "protocol": "4G/5G",
     "access": "边缘网关",
-    "vendor": "大疆 Matrice 30T"
+    "vendor": "申昊 空中自主巡视系统"
   },
   {
     "id": "DRONE-05",
-    "name": "大疆 Mavic 3T · 01",
+    "name": "申昊 空中自主巡视 · 05",
     "type": "drone",
     "station": "dispatch-pool",
     "task": "桨叶检查",
     "status": "检修",
     "power": "58%",
-    "protocol": "DJI Cloud API",
+    "protocol": "4G/5G",
     "access": "边缘网关",
-    "vendor": "大疆 Mavic 3T"
+    "vendor": "申昊 空中自主巡视系统"
   },
   {
     "id": "ROBOT-06",
-    "name": "亿嘉和 D200 · 01",
-    "vendor": "亿嘉和 D200",
+    "name": "申昊 开关室操作机器人 · 01",
+    "vendor": "申昊 开关室操作机器人",
     "type": "robot",
     "station": "dispatch-pool",
     "task": "待命",
@@ -277,19 +277,19 @@
   },
   {
     "id": "ROBOT-07",
-    "name": "亿嘉和 E100 · 04",
-    "vendor": "亿嘉和 E100",
+    "name": "国自 室外巡检机器人 · 01",
+    "vendor": "国自 室外巡检机器人",
     "type": "robot",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "68%",
-    "protocol": "5G / MQTT",
+    "protocol": "MQTT",
     "access": "边缘网关"
   },
   {
     "id": "DOG-06",
-    "name": "云深处 X30 · 02",
+    "name": "云深处 山猫 M20 · 01",
     "type": "dog",
     "station": "dispatch-pool",
     "task": "待命",
@@ -297,11 +297,11 @@
     "power": "53%",
     "protocol": "TCP",
     "access": "边缘网关",
-    "vendor": "云深处 绝影 X30"
+    "vendor": "云深处 山猫 M20"
   },
   {
     "id": "DOG-07",
-    "name": "云深处 X30 · 03",
+    "name": "云深处 山猫 M20 · 02",
     "type": "dog",
     "station": "dispatch-pool",
     "task": "待命",
@@ -309,30 +309,30 @@
     "power": "57%",
     "protocol": "TCP",
     "access": "边缘网关",
-    "vendor": "云深处 绝影 X30"
+    "vendor": "云深处 山猫 M20"
   },
   {
     "id": "DRONE-06",
-    "name": "大疆 Matrice 350 RTK · 03",
+    "name": "申昊 空中自主巡视 · 06",
     "type": "drone",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "52%",
-    "protocol": "DJI Cloud API",
+    "protocol": "4G/5G",
     "access": "边缘网关",
-    "vendor": "大疆 Matrice 350 RTK"
+    "vendor": "申昊 空中自主巡视系统"
   },
   {
     "id": "DRONE-07",
-    "name": "大疆 Mavic 3T · 02",
+    "name": "申昊 空中自主巡视 · 07",
     "type": "drone",
     "station": "dispatch-pool",
     "task": "待命",
     "status": "待命",
     "power": "62%",
-    "protocol": "DJI Cloud API",
+    "protocol": "4G/5G",
     "access": "边缘网关",
-    "vendor": "大疆 Mavic 3T"
+    "vendor": "申昊 空中自主巡视系统"
   }
 ]

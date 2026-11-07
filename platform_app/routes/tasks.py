@@ -39,6 +39,10 @@ def handle_planning() -> tuple[int, dict]:
         overview = get_overview()
         tasks = list_tasks()
         plan = build_v1_plan(tasks, overview.get("resources", []), overview.get("environment", {}))
+        from platform_app.services.neural_dispatch import load_policies, merge_policies
+        merge_policies(plan.get("policies") or [])
+        saved = {row.get("task_id"): row for row in load_policies() if row.get("task_id")}
+        plan["policies"] = [saved[task.get("id")] for task in tasks if task.get("id") in saved]
         resource_by_id = {row.get("id"): row for row in overview.get("resources", [])}
         live = []
         recent = []

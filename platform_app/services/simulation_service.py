@@ -9,6 +9,8 @@ def auto_assign(task_id):
     tasks = list_tasks()
     overview = get_overview()
     plan = build_v1_plan([task for task in tasks if task['id'] == task_id], overview['resources'], overview['environment'])
+    from platform_app.services.neural_dispatch import merge_policies
+    merge_policies(plan.get('policies') or [])
     chosen = [item for item in plan['assignments'] if item['task_id'] == task_id]
     if not chosen:
         return {'outcome': '等待可用设备', 'dispatch': None}
@@ -109,6 +111,8 @@ def start_demo_round():
     tasks = list_tasks()
     overview = get_overview()
     plan = build_v1_plan(tasks, overview["resources"], overview["environment"])
+    from platform_app.services.neural_dispatch import replace_policies
+    replace_policies(plan.get("policies") or [])
     sent = []
     failed = []
     for item in plan.get("assignments") or []:
