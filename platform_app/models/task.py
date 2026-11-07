@@ -18,6 +18,8 @@ class Task:
     task_id: str = ""
     created_at: str = ""
     route_id: str = ""
+    requirements: dict | None = None
+    route: dict | None = None
 
     @classmethod
     def from_payload(cls, payload: dict) -> "Task":
@@ -39,6 +41,8 @@ class Task:
             points=str(payload.get("points", "")).strip()[:2000],
             task_id=str(uuid4()),
             created_at=datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            requirements=dict(payload.get("requirements") or {}),
+            route=dict(payload.get("route") or {}) or None,
         )
 
     @classmethod
@@ -54,6 +58,8 @@ class Task:
             task_id=record.get("task_id", ""),
             created_at=record.get("created_at", ""),
             route_id=record.get("route_id", ""),
+            requirements=dict(record.get("requirements") or {}),
+            route=dict(record.get("route") or {}) or None,
         )
 
     def to_record(self) -> dict:
@@ -71,4 +77,6 @@ class Task:
             "status": self.status,
             "created_at": self.created_at,
             "route_id": self.route_id,
+            "requirements": self.requirements or {},
+            "route": self.route,
         }

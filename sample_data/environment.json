@@ -1,0 +1,14 @@
+{
+  "site": "虚构110kV变电站",
+  "observed_at": "实时",
+  "flight_allowed": true,
+  "weather": {
+    "condition": "多云",
+    "temperature_c": 22,
+    "wind_mps": 3.2,
+    "precipitation_mm": 0,
+    "visibility_km": 18
+  },
+  "no_fly_zones": [],
+  "note": "变电站天气与飞行许可均为仿真"
+}

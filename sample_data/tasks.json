@@ -1,50 +1,89 @@
 [
   {
-    "task_id": "patrol-01",
-    "name": "\u5de1\u68c0",
+    "task_id": "xiasha-road",
+    "name": "学源街路面巡检",
     "station": "dispatch-pool",
     "task_type": "robot",
     "executor": "",
-    "planned_time": "09:10",
-    "points": "P0 \u8d77\u70b9\nP01-A\nP01-B\nP01-C\nP01-D\nP01-E\nP01-F\nP01-G\nP0 \u7ec8\u70b9",
-    "status": "\u5f85\u8c03\u5ea6",
-    "route_id": "route-01",
-    "created_at": "2026-11-05T09:10:00+08:00"
+    "planned_time": "08:30",
+    "points": "基地 → 学源街西段 → 学源街东段 → 返回",
+    "status": "待调度",
+    "route_id": "xiasha-road",
+    "requirements": {
+      "capabilities": ["rgb_camera", "thermal"],
+      "terrain": "flat",
+      "min_width_m": 0.9,
+      "max_slope_deg": 10
+    },
+    "created_at": "2026-11-06T08:30:00+08:00"
   },
   {
-    "task_id": "patrol-02",
-    "name": "\u5de1\u68c0",
+    "task_id": "xiasha-lake",
+    "name": "金沙湖环湖巡检",
     "station": "dispatch-pool",
-    "task_type": "drone",
+    "task_type": "robot",
     "executor": "",
-    "planned_time": "09:20",
-    "points": "P0 \u8d77\u70b9\nP02-A\nP02-B\nP02-C\nP02-D\nP02-E\nP02-F\nP02-G\nP0 \u7ec8\u70b9",
-    "status": "\u5f85\u8c03\u5ea6",
-    "route_id": "route-02",
-    "created_at": "2026-11-05T09:20:00+08:00"
+    "planned_time": "09:00",
+    "points": "基地 → 金沙湖北岸 → 金沙湖东岸 → 返回",
+    "status": "待调度",
+    "route_id": "xiasha-lake",
+    "requirements": {
+      "capabilities": ["rgb_camera", "thermal"],
+      "terrain": "flat",
+      "min_width_m": 0.9,
+      "max_slope_deg": 10
+    },
+    "created_at": "2026-11-06T09:00:00+08:00"
   },
   {
-    "task_id": "patrol-03",
-    "name": "\u5de1\u68c0",
+    "task_id": "xiasha-aisle",
+    "name": "教学楼安全通道复核",
     "station": "dispatch-pool",
     "task_type": "team",
     "executor": "",
-    "planned_time": "09:30",
-    "points": "P0 \u8d77\u70b9\nP03-A\nP03-B\nP03-C\nP03-D\nP03-E\nP03-F\nP03-G\nP0 \u7ec8\u70b9",
-    "status": "\u5f85\u8c03\u5ea6",
-    "route_id": "route-03",
-    "created_at": "2026-11-05T09:30:00+08:00"
+    "planned_time": "09:20",
+    "points": "基地 → 教学楼通道 → 楼间连廊 → 返回",
+    "status": "待调度",
+    "route_id": "xiasha-aisle",
+    "requirements": {
+      "capabilities": ["manual_inspection"],
+      "terrain": "flat"
+    },
+    "created_at": "2026-11-06T09:20:00+08:00"
   },
   {
-    "task_id": "patrol-04",
-    "name": "\u5de1\u68c0",
+    "task_id": "xiasha-roof",
+    "name": "校园屋顶设施航拍",
+    "station": "dispatch-pool",
+    "task_type": "drone",
+    "executor": "",
+    "planned_time": "09:40",
+    "points": "基地 → 屋顶机房 → 实验楼屋面 → 返回",
+    "status": "待调度",
+    "route_id": "xiasha-roof",
+    "requirements": {
+      "capabilities": ["aerial_camera", "thermal"],
+      "terrain": "outdoor",
+      "max_wind_mps": 7
+    },
+    "created_at": "2026-11-06T09:40:00+08:00"
+  },
+  {
+    "task_id": "xiasha-gas",
+    "name": "紧急实验楼气体异常",
     "station": "dispatch-pool",
     "task_type": "robot",
     "executor": "",
-    "planned_time": "09:40",
-    "points": "P0 \u8d77\u70b9\nP04-A\nP04-B\nP04-C\nP04-D\nP04-E\nP04-F\nP04-G\nP0 \u7ec8\u70b9",
-    "status": "\u5f85\u8c03\u5ea6",
-    "route_id": "route-04",
-    "created_at": "2026-11-05T09:40:00+08:00"
+    "planned_time": "10:00",
+    "points": "基地 → 实验楼楼梯口 → 楼层平台 → 连廊出口 → 返回",
+    "status": "待调度",
+    "route_id": "xiasha-gas",
+    "requirements": {
+      "capabilities": ["rgb_camera", "gas"],
+      "terrain": "stairs",
+      "min_width_m": 0.7,
+      "max_slope_deg": 25
+    },
+    "created_at": "2026-11-06T10:00:00+08:00"
   }
 ]
