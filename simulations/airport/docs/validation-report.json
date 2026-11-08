@@ -1,0 +1,106 @@
+{
+  "passed": true,
+  "mission": "20261108-072428",
+  "wall_seconds": 222.358,
+  "rmf_tasks": 12,
+  "evidence": 9,
+  "pause_resume": true,
+  "duplicate_rejected": true,
+  "devices": {
+    "inspection_dog": {
+      "start": [
+        148.000000000005,
+        -36.5,
+        0.62
+      ],
+      "maxDistance": 3.0972486120484226,
+      "maxSpeed": 0.7978728426671707,
+      "maxZ": 0.62
+    },
+    "inspection_drone": {
+      "start": [
+        145,
+        -30.5,
+        0.4028571428571391
+      ],
+      "maxDistance": 6.8790163208614725,
+      "maxSpeed": 3.5110664863119982,
+      "maxZ": 6.002857139476304
+    },
+    "inspection_dog_2": {
+      "start": [
+        138.0000000000051,
+        -36.5,
+        0.62
+      ],
+      "maxDistance": 3.097251022686409,
+      "maxSpeed": 0.7980599274793785,
+      "maxZ": 0.62
+    },
+    "inspection_drone_2": {
+      "start": [
+        135,
+        -30.5,
+        0.4028571428571391
+      ],
+      "maxDistance": 7.714651712354463,
+      "maxSpeed": 3.97481639940779,
+      "maxZ": 7.002857138645184
+    },
+    "inspection_dog_3": {
+      "start": [
+        128.00000000000486,
+        -36.5,
+        0.62
+      ],
+      "maxDistance": 3.098797861483495,
+      "maxSpeed": 0.7979177946241087,
+      "maxZ": 0.62
+    },
+    "inspection_drone_3": {
+      "start": [
+        125,
+        -30.5,
+        0.4028571428571391
+      ],
+      "maxDistance": 8.585094280020716,
+      "maxSpeed": 4.207609567553425,
+      "maxZ": 8.002857137570329
+    },
+    "logistics_1": {
+      "start": [
+        130.00003051757812,
+        -41.500755310058594,
+        0.15
+      ],
+      "maxDistance": 15.405981602193329,
+      "maxSpeed": 0.4999992512918279,
+      "maxZ": 0.15
+    },
+    "logistics_2": {
+      "start": [
+        133.00003051757812,
+        -41.500755310058594,
+        0.15
+      ],
+      "maxDistance": 4.021486724106946,
+      "maxSpeed": 0.5000066241363988,
+      "maxZ": 0.15
+    }
+  },
+  "phase_transitions": [
+    "A:inspect / B:inspect / C:inspect",
+    "A:air / B:air / C:air",
+    "A:transport / B:transport / C:air",
+    "A:transport / B:transport / C:queue",
+    "A:handoff / B:transport / C:queue",
+    "A:return / B:transport / C:queue",
+    "A:return / B:handoff / C:queue",
+    "A:return / B:return / C:queue",
+    "A:completed / B:return / C:transport",
+    "A:completed / B:completed / C:transport",
+    "A:completed / B:completed / C:handoff",
+    "A:completed / B:completed / C:return",
+    "A:completed / B:completed / C:completed"
+  ]
+}

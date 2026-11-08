@@ -2,3 +2,6 @@
 **/*.pyc
 web/assets/feedback/substation-inspection-public-domain.jpg
 web/assets/feedback/substation-inspection-2-public-domain.jpg
+
+# Airport demonstration assets are hosted independently of the main platform.
+simulations/

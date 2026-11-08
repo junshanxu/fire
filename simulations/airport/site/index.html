@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AIRPORT OPS · 机场异构协同仿真</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <div class="brand"><span class="brand-icon">A</span><div>AIRPORT<span class="muted"> / OPS</span><small>异构机器人协同平台</small></div></div>
+  <nav>航站楼巡检 <span class="nav-dot">/</span> T1 中央区</nav>
+  <div class="connection" id="connection">正在连接仿真…</div>
+</header>
+<main>
+  <section class="heading">
+    <div><div class="eyebrow">OPEN-RMF × GAZEBO · LIVE SIMULATION</div><h1>一张工单，调动地面与空中。</h1><p>3 只机器狗 × 3 架无人机 × 2 台运输机器人 · 配电、行李输送、安防三处协同处置</p></div>
+    <div class="clock"><small>仿真运行时间</small><strong id="clock">—</strong><span>真实 ROS 2 /clock</span></div>
+  </section>
+  <section class="overview-metrics" id="overview-metrics"></section>
+  <div class="workspace">
+    <div class="main-column">
+      <section class="panel viewport">
+        <div class="panel-heading"><div><span class="live-dot"></span> 航站楼 · 实时三维场景</div><div class="view-tabs"><button class="selected" id="view-overview" onclick="setView('overview')">作业全景</button><button id="view-free" onclick="setView('free')">自由 3D 视角</button><button onclick="fullscreen()">⛶ 全屏</button></div></div>
+        <div id="scene"><img id="overview" src="/stream/overview" alt="Gazebo 航站楼中央作业区的实时相机画面"><svg id="overlay" viewBox="0 0 960 540" aria-label="实时设备位置与任务目标"></svg><iframe id="free-view" title="可缩放旋转的 Gazebo 三维视图" hidden allow="fullscreen"></iframe><div class="scene-tag">GAZEBO LIVE <span>•</span> 3 WORK ZONES</div><div class="scene-live" id="scene-live">正在读取实测速度…</div></div>
+        <div class="scene-caption"><span><i class="blue"></i>运输机器人</span><span><i class="gold"></i>机器狗</span><span><i class="mint"></i>无人机</span><span><i class="running-dot"></i>脉冲环 = 实测运动中</span><label><input type="checkbox" id="routes" checked onchange="drawOverlay(lastStatus)">目标连线</label><small id="camera-age">连接相机…</small></div>
+        <div id="selected-info">点击图中设备标签或下方设备卡，查看当前任务。</div>
+      </section>
+      <section class="workcells" id="cells"></section>
+      <div class="section-title"><b>全队实时状态</b><small>速度与转向来自仿真遥测 · 点击设备可定位</small></div>
+      <section class="devices" id="devices"><article class="panel device">等待设备遥测…</article></section>
+      <section class="cameras">
+        <article class="panel"><div class="panel-heading"><b>DOG-01 · 前视相机</b><small id="dog-age">实时</small></div><img src="/stream/dog" alt="DOG-01 的 Gazebo 相机"><div class="camera-caption">A 区配电设施 · 实时相机证据</div></article>
+        <article class="panel"><div class="panel-heading"><b>UAV-01 · 斜视相机</b><small id="drone-age">实时</small></div><img src="/stream/drone" alt="UAV-01 的 Gazebo 相机"><div class="camera-caption">A 区空中复核 · 三架无人机分别采用 6 / 7 / 8 米高度</div></article>
+      </section>
+      <details class="panel scope"><summary>示例来源与仿真范围</summary><p>场景来自 <a href="https://github.com/open-rmf/rmf_demos/tree/humble/rmf_demos_maps/maps/airport_terminal" target="_blank" rel="noopener">Open-RMF 官方 Airport Terminal</a>。在官方建筑和模型上增加了设备检查点、起降坪及三类设备的联合任务。</p><p>运输车与机器狗通过真实 RMF Fleet Adapter 注册和接受任务；无人机由联合任务服务协调，采用 Gazebo 简化刚体位置控制。机器狗采用平面底盘与可视化关节步态，并非完整足端接触动力学；无人机未接入 PX4。相机与位置来自 Gazebo，未接入物理设备，未进行 AI 故障识别。</p></details>
+    </div>
+    <aside>
+      <section class="panel mission">
+        <div class="eyebrow">MISSION CONTROL</div><h2>航站楼多点协同处置</h2><p>三处现场并行初检，运输机器人共享调度。每一步等待上游条件满足。</p>
+        <div class="metrics"><div><strong>08</strong><small>协同设备</small></div><div><strong id="fleet-count">—</strong><small>RMF 地面车队</small></div><div><strong>3 区</strong><small>联动告警点</small></div></div>
+        <button class="primary" id="start" disabled onclick="startMission()">▶ 启动 8 机协同演示</button>
+        <div class="secondary-actions"><button id="pause" onclick="physics('pause')">暂停仿真</button><button id="resume" onclick="physics('resume')">继续仿真</button></div>
+        <p id="message" role="status">等待三类设备和相机就绪。</p>
+        <div class="scenario-note">场景注入模拟告警；交接为到位确认与模拟工单，不含机械装卸和自动维修。</div>
+        <div id="steps"></div>
+        <div id="mission-result"></div>
+      </section>
+      <section class="panel evidence"><div class="panel-heading"><b>巡检记录</b><a href="/api/report" download="airport-mission.json">导出 JSON ↗</a></div><div id="evidence"><p>完成巡检后自动保存相机图像与任务编号。</p></div></section>
+      <section class="panel log"><div class="panel-heading"><b>实时调度日志</b><small>ROS / RMF</small></div><div id="events">等待任务…</div></section>
+    </aside>
+  </div>
+</main>
+<footer><span>AIRPORT OPS / 本地路演实例</span><span>ROS 2 Humble · Open-RMF · Gazebo Classic 11 · 无需 InOrbit API Key</span></footer>
+<script src="app.js"></script>
+</body></html>

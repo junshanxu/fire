@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b131e">
+<title>AIRPORT OPS · 航站楼联合巡检</title>
+<style>/*__STYLES__*/</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="#top" aria-label="返回总览"><span class="brand-icon">A</span><span>AIRPORT <span class="muted">/ OPS</span><small>异构机器人协同平台</small></span></a>
+  <nav aria-label="页面导航"><a class="current" href="#top">运行总览</a><a href="#workzones">作业区域</a><a href="#fleet">设备管理</a><a href="#records">记录归档</a></nav>
+  <div class="connection" id="connection" role="status">正在加载场景</div>
+</header>
+<main id="top">
+  <section class="heading">
+    <div><div class="eyebrow">T1 TERMINAL / COORDINATED OPERATIONS</div><h1>航站楼联合巡检</h1><p>配电设备 · 行李输送 · 安防设施 <span class="heading-divider">/</span> 地面初检、空中复核、物资交接与全队归位</p></div>
+    <div class="clock"><small>任务计时</small><strong id="clock">00:00</strong><span id="mission-code">T1 / READY</span></div>
+  </section>
+  <section class="overview-metrics" id="overview-metrics" aria-label="作业统计"></section>
+  <div class="workspace">
+    <div class="main-column">
+      <section class="panel viewport">
+        <div class="panel-heading"><div><span class="live-dot"></span><b id="view-title">航站楼 · 三维作业视图</b></div><div class="view-tabs" role="group" aria-label="场景视角"><button class="selected" data-view="overview">作业全景</button><button data-view="dog">机器狗视角</button><button data-view="drone">无人机视角</button><button id="fullscreen" aria-label="全屏显示场景">⛶</button></div></div>
+        <div id="scene">
+          <canvas id="overview" width="960" height="540" aria-label="航站楼三维作业画面"></canvas>
+          <svg id="overlay" viewBox="0 0 960 540" aria-label="设备位置与任务目标"></svg>
+          <div class="scene-tag">T1 CENTRAL CONCOURSE <span>•</span> 3 WORK ZONES</div>
+          <div class="scene-live" id="scene-live">8 台设备就绪</div>
+          <div class="scene-bottom" id="scene-bottom">机器狗初检 → 无人机复核 → 运输交接 → 全队归位</div>
+          <div class="load-state" id="load-state"><span class="spinner"></span><b>正在准备作业场景</b><small>画面与设备数据正在载入</small></div>
+        </div>
+        <div class="scene-caption"><span><i class="gold"></i>机器狗</span><span><i class="mint"></i>无人机</span><span><i class="blue"></i>运输机器人</span><span><i class="running-dot"></i>脉冲环表示当前运动</span><label><input type="checkbox" id="routes" checked>目标连线</label></div>
+        <div class="playback">
+          <button id="play-toggle" class="play-icon" title="播放或暂停（空格）" aria-label="开始播放" disabled>▶</button>
+          <span class="timecode" id="timecode">00:00 / 00:00</span>
+          <input type="range" id="seek" min="0" max="100" value="0" step="0.05" aria-label="作业进度">
+          <label class="speed-label">速度 <select id="speed" aria-label="播放速度"><option value="1">1×</option><option value="2">2×</option><option value="4" selected>4×</option></select></label>
+        </div>
+        <div id="selected-info">点击画面标签或设备卡，查看设备位置和当前任务。</div>
+      </section>
+      <div class="section-title" id="workzones"><b>三个现场，一条协同链</b><small>到点 → 复核 → 配送 → 交接</small></div>
+      <section class="workcells" id="cells"></section>
+      <div class="section-title" id="fleet"><b>全队运行状态</b><small>3 DOG · 3 UAV · 2 AMR</small></div>
+      <section class="devices" id="devices"></section>
+      <section class="cameras">
+        <article class="panel"><div class="panel-heading"><b>DOG-01 · 前视画面</b><button class="text-button" data-view="dog">放大查看 ↗</button></div><canvas id="dog-camera" width="480" height="270" aria-label="机器狗前视画面"></canvas><div class="camera-caption">A 区配电设备 · 地面到点检查</div></article>
+        <article class="panel"><div class="panel-heading"><b>UAV-01 · 空中画面</b><button class="text-button" data-view="drone">放大查看 ↗</button></div><canvas id="drone-camera" width="480" height="270" aria-label="无人机空中画面"></canvas><div class="camera-caption">分层航线 · 6 / 7 / 8 m</div></article>
+      </section>
+    </div>
+    <aside>
+      <section class="panel mission">
+        <div class="eyebrow">MISSION CONTROL</div><h2>多点协同处置</h2><p>三处现场并行初检，共享两台运输机器人。前置条件满足后，下一任务自动衔接。</p>
+        <div class="metrics"><div><strong>08</strong><small>协同设备</small></div><div><strong id="task-count">00</strong><small>已创建任务</small></div><div><strong id="record-count">00</strong><small>现场记录</small></div></div>
+        <button class="primary" id="start" disabled>▶ 启动联合作业</button>
+        <div class="secondary-actions"><button id="pause" disabled>暂停</button><button id="reset" disabled>重置流程</button></div>
+        <p id="message" role="status">正在准备场景与设备数据。</p>
+        <div id="steps"></div>
+        <div id="mission-result"></div>
+      </section>
+      <section class="panel chapters"><div class="panel-heading"><b>关键作业节点</b><small>点击定位</small></div><div id="chapters"></div></section>
+      <section class="panel evidence" id="records"><div class="panel-heading"><b>现场记录</b><button class="text-button" id="export">导出 JSON ↗</button></div><div id="evidence"><p>作业开始后，现场记录随任务进度归档。</p></div></section>
+      <section class="panel log"><div class="panel-heading"><b>调度动态</b><small>任务时间线</small></div><div id="events"></div></section>
+    </aside>
+  </div>
+</main>
+<footer><span>AIRPORT OPS / T1 中央作业区</span><span>地面初检 · 空中复核 · 协同交接 · 闭环归档</span></footer>
+<dialog id="evidence-modal"><button id="close-modal" aria-label="关闭现场记录">×</button><img id="evidence-image" alt="现场记录"><p id="evidence-label"></p></dialog>
+<video id="media" preload="auto" muted playsinline aria-hidden="true" hidden src="data:video/mp4;base64,__VIDEO__"></video>
+<script id="session-data" type="application/json">__DATA__</script>
+<script>/*__APP__*/</script>
+</body></html>
