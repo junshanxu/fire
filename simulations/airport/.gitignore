@@ -1,0 +1,10 @@
+# Generated and local files
+runtime/
+*.log
+__pycache__/
+*.pyc
+video/raw/
+video-tools/
+verification*.json
+*check*.jpg
+*final*.jpg
