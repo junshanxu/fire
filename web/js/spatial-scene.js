@@ -31,7 +31,7 @@
       this.onAirportMessage=event=>{if(!this.airportFrame||event.origin!==location.origin||event.source!==this.airportFrame.contentWindow||event.data?.type!=='airport-scene-ready')return;this.airportReady=true;this.host.classList.remove('airport-loading');};
       window.addEventListener('message',this.onAirportMessage);
       host.addEventListener('click',event=>{const row=event.target.closest('[data-altitude-device]');if(!row)return;this.selected=row.dataset.altitudeDevice;const select=host.querySelector('[data-device-select]');if(select)select.value=this.selected;});
-      this.setMode('road');
+      this.setMode('airport');
       this.frame=this.frame.bind(this);this.raf=requestAnimationFrame(this.frame);
     }
     setLocked(value){this.locked=Boolean(value);const button=this.host.querySelector('[data-lock-device]');if(button){button.classList.toggle('active',this.locked);button.querySelector('.console-button-label').textContent=this.locked?'已锁定设备':'锁定设备';}}
