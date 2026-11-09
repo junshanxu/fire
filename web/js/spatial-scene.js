@@ -72,6 +72,8 @@
       this.host.querySelector('[data-view-3d]').classList.toggle('active',this.mode==='road');
       this.host.querySelector('[data-view-satellite]').classList.toggle('active',this.mode==='satellite');
       this.host.querySelector('[data-view-airport]').classList.toggle('active',airport);
+      const credit=this.host.querySelector('[data-map-credit]');
+      if(credit)credit.textContent=this.mode==='satellite'?'影像 © Google':'© OpenStreetMap contributors';
     }
     sceneToLonLat(x,y){
       const z=15,world=2**z*256,lat0=this.centerLat*Math.PI/180;
@@ -93,7 +95,7 @@
       const ty0=Math.max(0,Math.floor((cy+(box.y0-50)*unit)/256)),ty1=Math.min(2**z-1,Math.floor((cy+(box.y1-50)*unit)/256));
       for(let tx=tx0;tx<=tx1;tx++)for(let ty=ty0;ty<=ty1;ty++){
         const key=`${this.mode}/${z}/${ty}/${tx}`;let image=this.tiles.get(key);
-        if(!image){image=new Image();image.referrerPolicy='no-referrer';image.onload=()=>this.tileRevision++;image.onerror=()=>{if(!this.tileWarning){this.tileWarning=true;window.toast?.('底图暂不可用，站内矢量仍可使用');}};image.src=this.mode==='satellite'?`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${ty}/${tx}`:`https://a.tile.openstreetmap.fr/hot/${z}/${tx}/${ty}.png`;this.tiles.set(key,image);}
+        if(!image){image=new Image();image.referrerPolicy='no-referrer';image.onload=()=>this.tileRevision++;image.onerror=()=>{if(!this.tileWarning){this.tileWarning=true;window.toast?.('底图暂不可用，站内矢量仍可使用');}};image.src=this.mode==='satellite'?`https://mt1.google.com/vt/lyrs=s&x=${tx}&y=${ty}&z=${z}`:`https://a.tile.openstreetmap.fr/hot/${z}/${tx}/${ty}.png`;this.tiles.set(key,image);}
         const left=this.project({x:50+(tx*256-cx)/unit,y:50+(ty*256-cy)/unit}),right=this.project({x:50+((tx+1)*256-cx)/unit,y:50+((ty+1)*256-cy)/unit});
         if(image.complete&&image.naturalWidth)this.ctx.drawImage(image,left.x,left.y,right.x-left.x+1,right.y-left.y+1);
       }

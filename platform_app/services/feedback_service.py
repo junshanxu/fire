@@ -47,10 +47,13 @@ _IMAGES = {
     "thermal": "/assets/feedback/transformer-bank-real.jpg",
     "radiator": "/assets/feedback/transformer-real.jpg",
     "visual": "/assets/feedback/gis-real.jpg",
+    "gauge": "/assets/feedback/pressure-gauge.jpg",
     "manual": "/assets/feedback/pump-room.jpg",
     "yard": "/assets/feedback/substation-public-domain.jpg",
+    "bank": "/assets/feedback/transformer-yard.jpg",
     "fence": "/assets/feedback/yard-fence-real.jpg",
     "line": "/assets/feedback/tower-real.jpg",
+    "propeller": "/assets/feedback/drone-propeller.jpg",
 }
 
 # Readings stay tied to the waypoint the crew has actually reached.
@@ -58,14 +61,14 @@ _POINT_READINGS = {
     "1号主变测温位": ("红外测温", "A相套管 43.8°C，B相 44.1°C，C相 43.6°C，三相温差 0.5°C。", "设备回传", "thermal"),
     "2号主变测温位": ("红外测温", "A相套管 63.4°C，高出 B/C 相约 18°C，已标成复测点。", "异常反馈", "thermal"),
     "3号主变测温位": ("红外测温", "三相套管 45.2–46.0°C，与负荷曲线相符。", "设备回传", "radiator"),
-    "GIS北侧压力表": ("设备巡检", "北侧 SF6 压力 0.52 MPa，密度继电器未动作。", "设备回传", "visual"),
-    "GIS南侧气体检测": ("设备巡检", "南侧 SF6 压力 0.49 MPa，检测仪无泄漏报警。", "设备回传", "visual"),
+    "GIS北侧压力表": ("设备巡检", "北侧 SF6 压力 0.52 MPa，密度继电器未动作。", "设备回传", "gauge"),
+    "GIS南侧气体检测": ("设备巡检", "南侧 SF6 压力 0.49 MPa，检测仪无泄漏报警。", "设备回传", "gauge"),
     "消防泵房门口": ("设施复核", "泵组外观完好，出口压力 0.32 MPa，现场已拍照。", "设备回传", "manual"),
     "消防沙箱": ("设施复核", "沙量约八成，箱门关闭，铲具在位。", "设备回传", "manual"),
     "辅助用房门口": ("设施复核", "通道无堆物，应急灯试验正常。", "设备回传", "manual"),
     "电抗器室门口": ("设施复核", "室门关闭，室内无异常气味。", "设备回传", "manual"),
     "1号主变上方": ("航拍测温", "可见光与热成像已回传，未见异常放电。", "设备回传", "thermal"),
-    "2号主变上方": ("航拍测温", "高位套管温度与地面测点一致，温差 1.2°C。", "设备回传", "thermal"),
+    "2号主变上方": ("航拍测温", "高位套管温度与地面测点一致，温差 1.2°C。", "设备回传", "bank"),
     "3号主变上方": ("航拍测温", "散热器组温度均匀，最高 47.6°C。", "设备回传", "radiator"),
     "GIS屋面": ("航拍测温", "屋面无积水，避雷针连接可见。", "设备回传", "visual"),
     "事故油池观察位": ("渗漏复核", "池壁干燥，液位在标线内，未见油膜。", "设备回传", "yard"),
@@ -146,7 +149,7 @@ def _yard_notes(resources: list[dict]) -> list[dict]:
             power_text = f"{round(power)}%" if isinstance(power, (int, float)) else "回升中"
             moment = now
             message = f"停在充电桩，电量 {power_text}，充满后转待命。"
-            image = ""
+            image = "bank"
         elif status == "离线" and resource.get("type") == "person":
             moment = shift
             message = "手持终端未登录。本日休班，不参与这一轮派工。"
@@ -156,11 +159,11 @@ def _yard_notes(resources: list[dict]) -> list[dict]:
             power = resource.get("power_percent")
             last = f"{round(power)}%" if isinstance(power, (int, float)) else "无读数"
             message = f"东侧围界链路中断。最后一次电量 {last}，本轮已由在线单元补位。"
-            image = ""
+            image = "fence"
         elif status in {"检修", "待检修"}:
             moment = shift + timedelta(minutes=46)
             message = "桨叶检查未完成，暂不放飞。"
-            image = ""
+            image = "propeller"
         else:
             continue
         notes.append({
@@ -207,11 +210,13 @@ def operation_feed() -> list[dict]:
     normal = [item for item in rows if item.get("kind") != "异常反馈"]
     chosen = alerts[:1]
     for item in normal:
-        if len(chosen) >= 3:
+        if len(chosen) >= 5:
             break
         chosen.append(item)
     chosen.sort(key=lambda item: item.get("sort_at") or 0, reverse=True)
-    ordered = chosen + yard
+    pictured = [item for item in yard if item.get("image")]
+    plain = [item for item in yard if not item.get("image")]
+    ordered = chosen + pictured + plain
     for item in ordered:
         item.pop("sort_at", None)
     return ordered[:8]
