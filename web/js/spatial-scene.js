@@ -7,7 +7,7 @@
   const ICON_SRC={robot:'/assets/icons/robot.png',dog:'/assets/icons/robot-dog.png',drone:'/assets/icons/drone.png',person:'/assets/icons/person.png',alert:'/assets/icons/alert.png',patrol:'/assets/icons/patrol.png'};
   class SpatialScene {
     constructor(host){
-      this.host=host;this.canvas=host.querySelector('canvas');this.ctx=this.canvas.getContext('2d');this.airportFrame=host.querySelector('[data-airport-ops]');
+      this.host=host;this.canvas=host.querySelector('canvas');this.ctx=this.canvas.getContext('2d');this.airportFrame=host.querySelector('[data-airport-ops]');this.airportReady=false;
       this.data={resources:[],tasks:[],incidents:[],plan:null};this.positions=new Map();this.motionCache=new WeakMap();this.bendCache=new WeakMap();this.births=new Map();this.selected=null;
       this.zoom=.85;this.defaultZoom=.85;this.mode='road';this.showAll=false;this.locked=false;this.tiles=new Map();this.panX=0;this.panY=0;this.hit=[];this.last=0;this.lastAltitudePaint=0;this.mouse=null;
       this.icons={};Object.entries(ICON_SRC).forEach(([key,src])=>{const image=new Image();image.src=src;this.icons[key]=image;});
@@ -28,6 +28,7 @@
       host.querySelector('[data-view-satellite]').onclick=()=>this.setMode('satellite');
       host.querySelector('[data-view-airport]').onclick=()=>this.setMode('airport');
       host.querySelector('[data-device-select]').onchange=e=>this.selected=e.target.value;
+      if(this.airportFrame)this.airportFrame.addEventListener('load',()=>{this.airportReady=true;this.host.classList.remove('airport-loading');});
       host.addEventListener('click',event=>{const row=event.target.closest('[data-altitude-device]');if(!row)return;this.selected=row.dataset.altitudeDevice;const select=host.querySelector('[data-device-select]');if(select)select.value=this.selected;});
       this.setMode('road');
       this.frame=this.frame.bind(this);this.raf=requestAnimationFrame(this.frame);
@@ -64,6 +65,7 @@
       this.mode=['satellite','airport'].includes(mode)?mode:'road';
       const airport=this.mode==='airport';
       this.host.classList.toggle('airport-mode',airport);
+      this.host.classList.toggle('airport-loading',airport&&!this.airportReady);
       this.canvas.hidden=airport;
       if(this.airportFrame){this.airportFrame.hidden=!airport;if(airport&&!this.airportFrame.src)this.airportFrame.src=this.airportFrame.dataset.src;}
       this.host.querySelector('[data-view-3d]').classList.toggle('active',this.mode==='road');
