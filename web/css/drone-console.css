@@ -1,0 +1,125 @@
+@font-face{font-family:"Barlow Condensed";src:url("/fonts/barlow-condensed-regular.ttf") format("truetype");font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url("/fonts/barlow-condensed-medium.ttf") format("truetype");font-style:normal;font-weight:500;font-display:swap}
+@font-face{font-family:"Barlow Condensed";src:url("/fonts/barlow-condensed-semibold.ttf") format("truetype");font-style:normal;font-weight:600;font-display:swap}
+
+/* The fleet keeps its existing interactions; this layer supplies the console shell. */
+html[data-theme="dark"]{--bg:#10151a;--panel:#1b2028;--ink:#e9f0f6;--muted:#b8c4d1;--line:#343f4c;--nav:#202a33;--teal:#46c8ed;--green:#43d790;--amber:#f1bb6a;--red:#f07971;--blue:#69a9ff;--shadow:0 1px 6px #0006}
+html[data-theme="dark"] body{background:var(--bg);color:var(--ink);font-family:"Barlow Condensed","PingFang SC","Microsoft YaHei",sans-serif}
+.app-shell{display:grid;grid-template-columns:168px minmax(0,1fr);grid-template-rows:64px minmax(0,1fr);min-height:100vh;background:var(--bg)}
+.topbar{grid-column:1/-1;grid-row:1;position:sticky;top:0;z-index:25;display:flex;align-items:center;gap:22px;width:100%;height:64px;min-height:64px;padding:0 22px;border:1px solid #34404b;border-left:0;border-right:0;background:linear-gradient(113deg,#313e48,#1e2832 42%,#29323a);box-shadow:0 3px 9px #080d1480}
+.console-brand{display:flex;align-items:center;gap:10px;flex:none;min-width:220px;color:#e9f0f6}
+.console-brand-mark{display:grid;place-items:center;width:36px;height:36px;color:#52c7ef;font:600 37px/1 "Barlow Condensed",sans-serif;transform:rotate(-15deg);text-shadow:0 2px 6px #135576}
+.console-brand strong{display:block;font:600 19px/1.1 "Barlow Condensed","PingFang SC",sans-serif;letter-spacing:.035em}
+.console-brand small{display:block;margin-top:3px;color:#a6bac8;font:11px/1.1 "Barlow Condensed","PingFang SC",sans-serif;letter-spacing:.06em}
+.console-page{display:flex;align-items:center;gap:12px;min-width:0;color:#d7e7f0}
+.console-page h1{margin:0;white-space:nowrap;font:600 15px/1 "Barlow Condensed","PingFang SC",sans-serif}
+.console-live{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;color:#a8bac6;font-size:11px}
+.console-live i{width:6px;height:6px;border-radius:50%;background:#43d790;box-shadow:0 0 0 3px #43d79022}
+.topbar-right{display:flex;align-items:center;gap:10px;min-width:0;margin-left:auto;color:#c4d2dc}
+.topbar-right #pageActions{min-width:0}
+.topbar-right .page-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;min-width:0}
+.topbar-right .btn,.topbar-right .select,.topbar-right .theme-toggle{height:32px;border-color:#4d5d6e;border-radius:3px;background:#17232dcc;color:#e0eaf0}
+.topbar-right .btn.primary{background:#19538b;border-color:#397fbb;color:#fff}
+.topbar-right .theme-toggle{width:32px;min-width:32px;font-size:16px}
+#clock{min-width:54px;color:#b8c8d2;text-align:right;font:500 12px "Barlow Condensed",ui-monospace,monospace}
+.sidebar{grid-column:1;grid-row:2;position:sticky;top:64px;z-index:8;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:0;width:auto;height:calc(100vh - 64px);min-height:0;padding:18px 6px;border-right:1px solid #394753;border-bottom:0;background:linear-gradient(165deg,#273139,#1d242b 66%,#1b2229)}
+html[data-theme="dark"] .sidebar{background:linear-gradient(165deg,#273139,#1d242b 66%,#1b2229);border-color:#394753}
+html[data-theme="dark"] .topbar{background:linear-gradient(113deg,#313e48,#1e2832 42%,#29323a);border-color:#34404b;color:#e9f0f6}
+.console-nav-label{padding:4px 11px 13px;color:#8198a9;font:500 11px "Barlow Condensed","PingFang SC",sans-serif;letter-spacing:.1em}
+#navigation{display:flex;flex-direction:column;align-items:stretch;gap:5px;flex:none;overflow:visible}
+.nav-link{display:flex;align-items:center;gap:11px;width:100%;margin:0;padding:11px 12px;border:1px solid transparent;border-radius:3px;color:#c5d3dd;font:500 12px "Barlow Condensed","PingFang SC",sans-serif;letter-spacing:.025em;white-space:nowrap}
+.nav-link svg{width:17px;height:17px;color:#c6dbe7}
+.nav-link:hover{background:#2d3b46;color:#fff}
+.nav-link.active{border-color:#30649c;background:linear-gradient(110deg,#164f8b,#203347);box-shadow:inset 0 0 10px #377ada28,0 0 3px #387fe04d;color:#f2f8fc}
+html[data-theme="dark"] .nav-link{color:#c5d3dd}
+html[data-theme="dark"] .nav-link:hover{background:#2d3b46;color:#fff}
+html[data-theme="dark"] .nav-link.active{border-color:#30649c;background:linear-gradient(110deg,#164f8b,#203347);box-shadow:inset 0 0 10px #377ada28,0 0 3px #387fe04d;color:#f2f8fc}
+.main-area{grid-column:2;grid-row:2;min-width:0;background:transparent}
+.page-wrap{max-width:none;padding:14px 16px 28px}
+html[data-theme="dark"] .main-area{background:transparent;color:var(--ink)}
+html[data-theme="dark"] .card,html[data-theme="dark"] .modal{border:1px solid #38444f;border-radius:8px;background:linear-gradient(120deg,#1b2029,#191e26);box-shadow:inset 0 0 0 2px #ffffff02,0 1px 5px #0006;color:var(--ink)}
+html[data-theme="dark"] .card-head,html[data-theme="dark"] .toolbar{border-color:#35424d}
+html[data-theme="dark"] .card-head h2{font:600 15px "Barlow Condensed","PingFang SC",sans-serif;letter-spacing:.025em}
+html[data-theme="dark"] .hint,html[data-theme="dark"] .cell-note,html[data-theme="dark"] .task-meta{color:#9aafbd}
+html[data-theme="dark"] .btn,html[data-theme="dark"] .input,html[data-theme="dark"] .select,html[data-theme="dark"] .theme-toggle{border-color:#455767;border-radius:3px;background:#202c36;color:#dce9f1}
+html[data-theme="dark"] .btn:hover,html[data-theme="dark"] .theme-toggle:hover{background:#2b4050}
+html[data-theme="dark"] .btn.primary{border-color:#397fbb;background:#19538b;color:#fff}
+html[data-theme="dark"] .btn:focus-visible,html[data-theme="dark"] .nav-link:focus-visible{outline:2px solid #61d9fa;outline-offset:2px}
+html[data-theme="dark"] .data-table th{background:#202b35;color:#9eb4c3;border-color:#35424d}
+html[data-theme="dark"] .data-table td{color:#d0dce3;border-color:#2f3b45}
+html[data-theme="dark"] .task-card,html[data-theme="dark"] .ops-row,html[data-theme="dark"] .feedback-row{border-color:#2e3b46}
+html[data-theme="dark"] .task-card:hover,html[data-theme="dark"] .ops-row:hover{background:#202d38}
+html[data-theme="dark"] .ops-row.active{background:#203546}
+html[data-theme="dark"] .status-pill{background:#203c36;color:#7ce5b3}
+html[data-theme="dark"] .status-pill.warn{background:#443626;color:#f1bb6a}
+html[data-theme="dark"] .status-pill.run{background:#233b54;color:#8ac3fa}
+html[data-theme="dark"] .scheme-toggle{color:#80c9e9}
+html[data-theme="dark"] .progress-ring{background:conic-gradient(#46c8ed calc(var(--progress)*1%),#30414b 0);color:#d8edf6}
+html[data-theme="dark"] .progress-ring::after{background:#1b2028}
+html[data-theme="dark"] .ops-track{background:#30414b}
+html[data-theme="dark"] .ops-track i,html[data-theme="dark"] .battery-track i{background:#43d790}
+html[data-theme="dark"] .metric,html[data-theme="dark"] .resource-count,html[data-theme="dark"] .task-blueprint{border-color:#38444f;border-radius:5px;background:#202a33;color:#e6f0f5}
+html[data-theme="dark"] button.resource-count:hover,html[data-theme="dark"] button.resource-count.selected{border-color:#377eae;background:#1d3445;box-shadow:0 0 0 2px #46c8ed22}
+html[data-theme="dark"] .weather-rail{color:#dce9f1}
+html[data-theme="dark"] .weather-rail span{color:#b5c6cf}
+html[data-theme="dark"] .space-toolbar,html[data-theme="dark"] .space-readout,html[data-theme="dark"] .space-foot,html[data-theme="dark"] .altitude-axis{background:#1b2530;color:#d0e0e8;border-color:#38444f}
+html[data-theme="dark"] .scene-legend{background:#192631e8;color:#d8e7ed;border:1px solid #405460}
+html[data-theme="dark"] .alt-row.chosen{outline-color:#46c8ed}
+html[data-theme="dark"] .task-studio,html[data-theme="dark"] .device-console{background:#1b2028}
+html[data-theme="dark"] .task-studio>header,html[data-theme="dark"] .task-blueprints{background:#202b35;border-color:#38444f}
+html[data-theme="dark"] .task-advice{background:#22313c;border-left-color:#46c8ed;color:#e0edf3}
+html[data-theme="dark"] .task-map-picker{border-color:#4b6472}
+html[data-theme="dark"] .modal-head,html[data-theme="dark"] .modal-actions{border-color:#38444f}
+
+/* The live map is the camera panel; the cost ledger becomes its side instrument. */
+@media(min-width:1380px){
+  #pageContent:has(.dispatch-priority){display:grid;grid-template-columns:minmax(0,1.85fr) minmax(330px,1fr);gap:12px;align-items:start}
+  .dispatch-priority,.ops-board,.event-feed{grid-column:1/-1}
+  .dispatch-scene{grid-column:1;grid-row:2}
+  .cost-panel{grid-column:2;grid-row:2;margin:0;max-height:620px;overflow:auto}
+  .cost-panel .cost-scroll{overflow:visible}
+  .cost-panel .data-table,.cost-panel .data-table tbody{display:block;min-width:0;width:100%}
+  .cost-panel .data-table thead{display:none}
+  .cost-panel .data-table tr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px 8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .cost-panel .data-table td{display:block;min-width:0;padding:0;border:0;white-space:normal;overflow-wrap:anywhere}
+  .cost-panel .data-table td:first-child,.cost-panel .data-table td:nth-child(2){grid-column:1/-1}
+  .cost-panel .data-table td:nth-child(2){color:var(--muted);font-size:11px}
+  .cost-panel .data-table td:nth-child(3)::before{content:"路程"}
+  .cost-panel .data-table td:nth-child(4)::before{content:"电耗"}
+  .cost-panel .data-table td:nth-child(5)::before{content:"用时"}
+  .cost-panel .data-table td:nth-child(6)::before{content:"开销"}
+  .cost-panel .data-table td:nth-child(n+3)::before{display:block;margin-bottom:2px;color:var(--muted);font-size:10px}
+}
+
+/* Light mode keeps the same cockpit arrangement with the previous light palette. */
+html[data-theme="light"] .sidebar{background:#18232d;color:#cad3d9;border-color:#30404b}
+html[data-theme="light"] .nav-link{color:#b9c4cb}
+html[data-theme="light"] .nav-link:hover{background:#22313b;color:#fff}
+html[data-theme="light"] .nav-link.active{background:#253944;color:#fff;box-shadow:inset 3px 0 #35b4a8}
+html[data-theme="light"] .topbar{background:linear-gradient(113deg,#313e48,#1e2832 42%,#29323a);color:#e9f0f6}
+html[data-theme="light"] .page-wrap{padding:14px 16px 28px}
+
+@media(max-width:1050px){.console-brand{min-width:0}.console-brand strong{font-size:16px}.console-live{display:none}.topbar{gap:14px;padding:0 14px}.sidebar{padding-left:3px;padding-right:3px}.nav-link{padding:10px 8px}}
+@media(max-width:760px){
+  .app-shell{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr)}
+  .topbar{grid-column:1;grid-row:1;position:sticky;top:0;height:auto;min-height:56px;flex-wrap:wrap;gap:8px;padding:8px 10px}
+  .console-brand strong{font-size:15px}.console-brand small{display:none}.console-page{margin-left:auto}.console-page h1{font-size:13px}
+  .topbar-right{width:100%;justify-content:space-between;flex-wrap:wrap;margin-left:0}.topbar-right .page-actions{justify-content:flex-start;flex-wrap:wrap}
+  .sidebar{grid-column:1;grid-row:2;position:relative;top:auto;height:auto;min-height:0;padding:5px 8px;border-right:0;border-bottom:1px solid #394753}
+  .console-nav-label{display:none}#navigation{flex-direction:row;gap:3px;overflow-x:auto}.nav-link{width:auto;padding:8px 7px}
+  .main-area{grid-column:1;grid-row:3}.page-wrap,html[data-theme="light"] .page-wrap{padding:10px 8px 22px}
+}
+
+/* Lucide controls and the donor console's illuminated pill buttons. */
+.console-icon,.console-brand-mark{width:1.2em;height:1.2em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.console-brand-mark{width:35px;height:35px;stroke-width:2.7}
+.nav-link .console-icon{width:17px;height:17px}
+.btn:has(.console-icon),.space-modes button{display:inline-flex;align-items:center;justify-content:center;gap:7px}
+html[data-theme="dark"] .btn,html[data-theme="dark"] .space-modes button,html[data-theme="dark"] .theme-toggle{border:1px solid #7894a5;border-radius:999px;background:linear-gradient(180deg,#2a3741,#19232c 55%,#27313b);box-shadow:inset 0 1px 1px #c3e9ff57,inset 0 -2px 2px #0c141c,0 2px 0 #080c12;color:#dce9f1}
+html[data-theme="dark"] .btn.primary,html[data-theme="dark"] .space-modes button.active,html[data-theme="dark"] .space-toolbar .btn.active{border-color:#71b3eb;background:linear-gradient(180deg,#244d72,#073367 60%,#0e5290);box-shadow:inset 0 1px 1px #b1e0ff88,inset 0 -2px 2px #0d67a4,0 2px 0 #0b1c29,0 3px 6px #005bbb55;color:#f2f9ff}
+html[data-theme="dark"] .btn:hover,html[data-theme="dark"] .space-modes button:hover,html[data-theme="dark"] .theme-toggle:hover{filter:brightness(1.15)}
+.space-modes button{padding:0 12px;min-height:32px}
+.space-toolbar .map-zoom{width:33px;padding:0}
+.space-toolbar .console-icon{width:15px;height:15px}
+.topbar-right .btn .console-icon{width:15px;height:15px}
+.theme-toggle{display:grid;place-items:center}

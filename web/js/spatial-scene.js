@@ -9,7 +9,7 @@
     constructor(host){
       this.host=host;this.canvas=host.querySelector('canvas');this.ctx=this.canvas.getContext('2d');
       this.data={resources:[],tasks:[],incidents:[],plan:null};this.positions=new Map();this.motionCache=new WeakMap();this.births=new Map();this.selected=null;
-      this.zoom=1.9;this.defaultZoom=1.9;this.mode='road';this.showAll=false;this.locked=false;this.tiles=new Map();this.panX=0;this.panY=0;this.hit=[];this.last=0;this.mouse=null;
+      this.zoom=1.6;this.defaultZoom=1.6;this.mode='road';this.showAll=false;this.locked=false;this.tiles=new Map();this.panX=0;this.panY=0;this.hit=[];this.last=0;this.mouse=null;
       this.icons={};Object.entries(ICON_SRC).forEach(([key,src])=>{const image=new Image();image.src=src;this.icons[key]=image;});
       this.centerLat=30.3165737;this.centerLon=120.3479082;this.meters=70;
       this.resize=new ResizeObserver(()=>this.measure());this.resize.observe(host);this.measure();
@@ -21,7 +21,7 @@
       host.querySelector('[data-zoom-in]').onclick=()=>this.zoom=clamp(this.zoom*1.2,1.15,4);
       host.querySelector('[data-zoom-out]').onclick=()=>this.zoom=clamp(this.zoom/1.2,1.15,4);
       host.querySelector('[data-lock-device]').onclick=()=>this.setLocked(!this.locked);
-      host.querySelector('[data-show-all]').onclick=()=>{this.showAll=!this.showAll;const button=host.querySelector('[data-show-all]');button.classList.toggle('active',this.showAll);button.textContent=this.showAll?'收起':'全部';this.refreshCount();};
+      host.querySelector('[data-show-all]').onclick=()=>{this.showAll=!this.showAll;const button=host.querySelector('[data-show-all]');button.classList.toggle('active',this.showAll);button.querySelector('.console-button-label').textContent=this.showAll?'收起':'全部';this.refreshCount();};
       host.querySelector('[data-view-3d]').onclick=()=>this.setMode('road');
       host.querySelector('[data-view-satellite]').onclick=()=>this.setMode('satellite');
       host.querySelector('[data-device-select]').onchange=e=>this.selected=e.target.value;
@@ -29,7 +29,7 @@
       this.setMode('road');
       this.frame=this.frame.bind(this);this.raf=requestAnimationFrame(this.frame);
     }
-    setLocked(value){this.locked=Boolean(value);const button=this.host.querySelector('[data-lock-device]');if(button){button.classList.toggle('active',this.locked);button.textContent=this.locked?'已锁定设备':'锁定设备';}}
+    setLocked(value){this.locked=Boolean(value);const button=this.host.querySelector('[data-lock-device]');if(button){button.classList.toggle('active',this.locked);button.querySelector('.console-button-label').textContent=this.locked?'已锁定设备':'锁定设备';}}
     measure(){const rect=this.host.querySelector('.space-map').getBoundingClientRect();this.w=rect.width;this.h=rect.height;const dpr=Math.min(devicePixelRatio||1,2);this.canvas.width=this.w*dpr;this.canvas.height=this.h*dpr;this.ctx.setTransform(dpr,0,0,dpr,0,0);}
     update(data){
       const previous=new Set(this.data.tasks.map(t=>t.id));this.data=data;
@@ -164,7 +164,7 @@
         this.badge(v,r.type,tone.t<0.12?'#c5ced4':tone.fill,28,chosen);this.hit.push({id:r.id,x:v.x,y:v.y});
         const power=r.power_percent==null?'—':`${Math.round(r.power_percent)}%`;
         if(!this.showAll||chosen)this.tag([`${r.name}  ${r.status}`,`${power} · 海拔 ${Math.round(demoZ)}m`].reverse(),p);
-        if(chosen){const geo=this.sceneToLonLat(p.x,p.y);this.host.querySelector('[data-device-readout]').textContent=`${r.name}  ${r.status}   经度 ${geo.lon.toFixed(5)}  纬度 ${geo.lat.toFixed(5)}  海拔 ${demoZ.toFixed(1)} m`;}
+        if(chosen){const geo=this.sceneToLonLat(p.x,p.y);const assignedTask=this.data.tasks.find(task=>String(task.executor||'').split('、').includes(r.name)||task.name===r.task);const taskText=assignedTask?`  巡检任务 ${assignedTask.name}`:'  巡检任务 待命';this.host.querySelector('[data-device-readout]').textContent=`${r.name}  ${r.status}${taskText}   经度 ${geo.lon.toFixed(5)}  纬度 ${geo.lat.toFixed(5)}  海拔 ${demoZ.toFixed(1)} m`;}
       });
       if(this.locked){const chosen=units.find(unit=>unit.r.id===this.selected);if(chosen){this.panX+=(this.w/2-chosen.v.x)*.14;this.panY+=(this.h/2-chosen.v.y)*.14;}}
       this.paintAltitude();
