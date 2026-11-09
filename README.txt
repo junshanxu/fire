@@ -6,7 +6,7 @@
 
 启动
 千问 AI 调度
-当前 API Key 直接写在 platform_app/services/ai_dispatch_service.py 的 API_KEY 变量中。默认模型为 qwen-plus。
+通过环境变量 DASHSCOPE_API_KEY 配置 API Key。默认模型为 qwen-plus。
 
 添加任务
 前端模块包括运行总览、设备管理、任务管理、统一调度、运行监控和系统管理。设备新增、编辑、分类筛选、详情查看、任务创建与分配、反馈提交、设备类型和协议配置均提供演示交互。
@@ -50,3 +50,8 @@ task_type 可用值：robot（机器狗）、team（人员协同）、drone（�
 - 增加或修改 API：platform_app/routes/tasks.py
 - 调整页面结构、样式、浏览器交互：web/ 下对应文件
 - 修改端口：platform_app/config.py
+
+机场异构协同展示（Open-RMF / Gazebo）
+- 完整机场场景、Docker 运行入口和中文说明：simulations/airport/README.zh-CN.md
+- 可直接上传静态托管的单文件页面：simulations/airport/web-demo/index.html
+- 页面部署说明和重新构建命令：simulations/airport/web-demo/README.md

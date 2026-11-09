@@ -18,6 +18,11 @@ def read_sample_file(name: str) -> list[dict]:
 
 
 def list_sample_tasks() -> list[dict]:
+    from platform_app.services.substation_site import sample_tasks
+    return sample_tasks()
+
+
+def list_legacy_sample_tasks() -> list[dict]:
     from platform_app.models.task import Task
 
     routes = {row.get("route_id"): row for row in read_sample_file("routes.json")}

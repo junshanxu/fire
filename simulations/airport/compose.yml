@@ -1,0 +1,27 @@
+services:
+  simulator:
+    image: rmf-airport-sim:humble
+    build: .
+    shm_size: 2gb
+    restart: unless-stopped
+    environment:
+      ROS_DOMAIN_ID: "43"
+      LIBGL_ALWAYS_SOFTWARE: "1"
+    volumes:
+      - ./runtime/evidence:/opt/airport/runtime/evidence
+      - ./runtime/reports:/opt/airport/runtime/reports
+      - ./controller.py:/opt/airport/controller.py:ro
+      - ./fleet_config.py:/opt/airport/fleet_config.py:ro
+      - ./portal.py:/opt/airport/portal.py:ro
+      - ./site:/opt/airport/site:ro
+      - ./start.sh:/opt/airport/start.sh:ro
+      - ./airport.launch.py:/opt/airport/airport.launch.py:ro
+  website:
+    image: nginx:alpine
+    ports:
+      - "127.0.0.1:8092:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - simulator
+    restart: unless-stopped

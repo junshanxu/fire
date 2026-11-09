@@ -66,7 +66,7 @@ def handle_dispatch(body: bytes) -> tuple[int, dict]:
 def handle_feedback(method: str, body: bytes = b"") -> tuple[int, dict | list]:
     try:
         if method == "GET":
-            return 200, list_feedback()
+            return 200, operation_feed() + list_feedback()
         payload = json.loads(body.decode("utf-8"))
         if not isinstance(payload, dict):
             return 400, {"error": "请求内容必须是 JSON 对象"}

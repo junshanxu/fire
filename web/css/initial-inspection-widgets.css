@@ -1,0 +1,64 @@
+/* Additive widgets: keep the original dashboard language while exposing the Xiasha simulation. */
+@font-face{font-family:'Barlow Condensed';src:url('/fonts/barlow-condensed-regular.ttf') format('truetype');font-weight:400;font-style:normal;font-display:swap}@font-face{font-family:'Barlow Condensed';src:url('/fonts/barlow-condensed-semibold.ttf') format('truetype');font-weight:600 800;font-style:normal;font-display:swap}
+body{font-family:'DM Sans','Noto Sans SC',sans-serif}.page-heading h1,.card-head h2,.metric-value,.btn,.nav-link,.running-task b{font-family:'Barlow Condensed','Noto Sans SC',sans-serif}.btn{border-radius:999px;border-color:#9eb7c1;background:#fff;color:#29485a;font-weight:600;letter-spacing:.15px}.btn:hover{background:#edf7f8;border-color:#5d9daf}.btn.primary{background:linear-gradient(135deg,#147a92,#2464ac);border-color:#3290c1;box-shadow:0 3px 10px #236ca32b}.btn.danger{border-color:#d48e8e}.header-icon{border-radius:50%;border-color:#b4c5cc}
+.dashboard-spatial-card,.monitor-spatial-card{overflow:hidden;margin:0 0 14px}.dashboard-spatial-card .card-head,.monitor-spatial-card .card-head{min-height:42px}.dashboard-spatial-card .hint,.monitor-spatial-card .hint{margin-left:8px}
+.simulation-space{background:#edf2f3;border-top:1px solid #e0e7e9;overflow:hidden}.space-toolbar{min-height:42px;padding:7px 12px;display:flex;align-items:center;gap:6px;background:#f8fafb;border-bottom:1px solid #e0e7e9;color:#6c7d87;font-size:10px;flex-wrap:wrap}.space-toolbar>span{margin-right:auto;font-variant-numeric:tabular-nums}.space-toolbar label{display:flex;align-items:center;gap:5px}.space-toolbar select{height:28px;min-width:124px;border:1px solid #d6dfe2;border-radius:4px;background:#fff;color:#374e5c;padding:0 7px;font:inherit}.space-toolbar .btn{height:28px;min-height:28px;padding:0 8px;font-size:10px}.space-modes{display:flex;border:1px solid #d3dee1;border-radius:4px;overflow:hidden}.space-modes button{height:27px;padding:0 9px;border:0;border-right:1px solid #d3dee1;background:#fff;color:#60717a;font:inherit;cursor:pointer}.space-modes button:last-child{border-right:0}.space-modes button.active{background:#315f73;color:#fff}.space-viewport{height:300px;display:flex;position:relative;overflow:hidden}.space-map{position:relative;flex:1;min-width:0}.space-viewport canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none}.space-viewport canvas:active{cursor:grabbing}.altitude-axis{width:150px;display:flex;flex-direction:column;background:#f8fafb;border-left:1px solid #e1e8eb}.altitude-title{padding:9px 10px 0;color:#314852;font-size:11px;font-weight:600}.altitude-body{display:flex;min-height:0;flex:1}.altitude-scale{position:relative;flex:1;margin:12px 6px 14px 29px;border-left:1px solid #c5d2d8}.alt-tick{position:absolute;left:-29px;width:23px;transform:translateY(50%);text-align:right;color:#7b8c96;font:9px ui-monospace,monospace}.alt-tick:after{content:"";position:absolute;right:-9px;top:50%;width:5px;border-top:1px solid #c5d2d8}.alt-notch{position:absolute;left:-3px;width:5px;height:2px;border-radius:1px}.altitude-list{width:105px;overflow:auto;padding:8px 5px 8px 0}.alt-row{width:100%;display:flex;justify-content:space-between;gap:3px;margin-bottom:2px;border:0;border-radius:2px;padding:3px 4px;text-align:left;font:9px 'DM Sans','Noto Sans SC',sans-serif;cursor:pointer}.alt-row.chosen{outline:2px solid #234d62}.alt-row b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.alt-row small{font:9px ui-monospace,monospace}.space-readout{padding:7px 12px;background:#fff;border-top:1px solid #e1e8eb;color:#536b77;font:10px ui-monospace,'Noto Sans SC',sans-serif;min-height:29px;white-space:nowrap;overflow:auto}.space-foot{padding:5px 12px;background:#fff;border-top:1px solid #eef1f1;text-align:right;color:#8b979c;font-size:9px}
+.robot-feedback{grid-template-columns:6px 74px minmax(0,1fr) auto;align-items:start;gap:9px}.robot-feedback img{width:74px;height:48px;object-fit:cover;border:1px solid #e4e9e8;border-radius:3px}.feedback-meta{display:block;color:#819099;font-size:9px;margin-top:4px}.feedback-stream{padding-top:6px;padding-bottom:6px}.feedback-stream .feedback-row{padding:9px 0}.feedback-stream .feedback-sev{height:48px}
+.route-cost-panel{grid-column:1/-1;margin-top:0;overflow:hidden}.route-cost-total{font-variant-numeric:tabular-nums;color:#315f73;font-size:11px;font-weight:600}.route-cost-panel .data-table td:nth-last-child(-n+4){font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.running-tasks-panel{margin:0 0 14px;overflow:hidden}.running-tasks-panel .card-head{min-height:38px}.running-task-list{display:flex;flex-direction:column}.running-task{display:grid;grid-template-columns:minmax(220px,1fr) auto minmax(110px,.45fr) 36px;align-items:center;gap:12px;padding:9px 14px;border-top:1px solid #edf0f2}.running-task:first-child{border-top:0}.running-task-main{display:grid;gap:3px;min-width:0}.running-task-main b{font-size:14px;color:#223b49}.running-task-main span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#71838c;font-size:10px}.running-progress{height:5px;overflow:hidden;border-radius:99px;background:#dce9e7}.running-progress i{display:block;height:100%;min-width:3px;border-radius:inherit;background:linear-gradient(90deg,#20a987,#2d78b1)}.running-task>strong{font:600 10px ui-monospace,SFMono-Regular,monospace;color:#365565;text-align:right}
+@media(max-width:1100px){.space-viewport{height:340px}.altitude-axis{width:135px}.space-toolbar>span{display:none}}@media(max-width:650px){.space-toolbar{gap:4px}.space-toolbar label{font-size:0}.space-toolbar select{max-width:130px;min-width:100px}.space-viewport{height:auto;flex-direction:column}.space-map{height:300px}.altitude-axis{width:100%;height:145px;flex:none}.altitude-list{width:55%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}.altitude-scale{margin-bottom:11px}.robot-feedback{grid-template-columns:6px 62px minmax(0,1fr)}.robot-feedback img{width:62px;height:44px}.robot-feedback .feedback-time{display:none}}
+
+/* Light reading size. The base palette stays the light dashboard. */
+body{font-size:15px}
+.brand b{font-size:17px}.brand small{font-size:12px;letter-spacing:.15px;line-height:1.25;text-transform:none}
+.nav-caption{font-size:12px}.nav-link{font-size:15px}.sidebar-footer{font-size:13px}
+.breadcrumb,.topbar-right{font-size:14px}.page-heading h1{font-size:28px}.page-heading p{font-size:14px}
+.btn{font-size:14px;height:36px}.card-head h2{font-size:16px}.card-head .hint{font-size:13px}
+.metric-label{font-size:13px}.metric-value{font-size:32px}.metric-note{font-size:13px}
+.resource-count label{font-size:13px}.resource-count b{font-size:22px}
+.data-table th{font-size:13px}.data-table td,.data-table strong{font-size:14px}
+.task-name{font-size:15px}.task-meta,.feedback-text,.feedback-time{font-size:13px}.feedback-title{font-size:14px}
+.space-toolbar,.space-modes button,.altitude-title,.space-readout{font-size:14px}.space-foot,.alt-row,.alt-tick{font-size:12px}
+.decision-tag,.candidate-chip,.analysis-empty{font-size:13px}
+.ai-report .card-body{padding:14px 16px}.report-headline{margin:0 0 6px;color:#1b2730;font-size:20px}.report-summary{margin:0;color:#52616a;line-height:1.7}.report-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:13px}.report-section{padding:10px 12px;border:1px solid #e3eaee;background:#f7fafb}.report-section h3{margin:0 0 7px;color:#087e78;font-size:15px}.report-section ul{margin:0;padding-left:17px;color:#314049;line-height:1.7}.report-next{display:flex;gap:10px;margin-top:12px;padding:9px 12px;border-left:3px solid #168762;background:#eef8f4;color:#314049}.report-next b{color:#168762;white-space:nowrap}.report-next span{line-height:1.5}
+@media(max-width:650px){.report-grid{grid-template-columns:1fr}.report-next{display:block}.report-next span{display:block;margin-top:4px}}
+
+/* Keep labels that identify states and data; omit repeated explanatory copy. */
+#pageSubtitle,.metric-note,.decision-footnote,.module-card>p{display:none}
+.route-cost-panel .card-head>.hint{display:none}
+.resource-count{font:inherit;text-align:left;color:inherit;cursor:pointer;min-width:0}
+.resource-count span{font-size:10px;color:#9eafbd}
+.resource-count:hover{border-color:#668a9f}
+.resource-count.active{border-color:#46c8ed;background:#203545}
+.resource-count:focus-visible{outline:2px solid #46c8ed;outline-offset:2px}
+/* Shared with the larger 8000 spatial console: map first, altitude as readable data. */
+.dashboard-spatial-card .space-viewport,.monitor-spatial-card .space-viewport{height:clamp(390px,55vh,680px)}
+.airport-ops-frame{position:absolute;inset:0;width:100%;height:100%;border:0;background:#0b131e}.airport-ops-frame[hidden]{display:none!important}.simulation-space.airport-mode .airport-ops-frame{display:block}.simulation-space.airport-mode .altitude-axis,.simulation-space.airport-mode .space-readout,.simulation-space.airport-mode .space-foot,.simulation-space.airport-mode .space-toolbar>label,.simulation-space.airport-mode [data-zoom-in],.simulation-space.airport-mode [data-zoom-out],.simulation-space.airport-mode [data-lock-device],.simulation-space.airport-mode [data-show-all],.simulation-space.airport-mode [data-view-reset]{display:none}.simulation-space.airport-mode .space-map{height:100%}.simulation-space.airport-mode .space-toolbar>span{margin-left:auto;margin-right:0}.simulation-space.airport-mode .space-toolbar>span:after{content:'机场协同作业';color:#147a92}
+.simulation-space.airport-loading .space-map:after{content:'三维场景加载中…';position:absolute;inset:0;z-index:3;display:grid;place-items:center;color:#e7f7ff;font-weight:700;letter-spacing:.08em;background:linear-gradient(#07131db8,#07131de0),url('/assets/airport/airport-preview.jpg') center/cover no-repeat}
+.altitude-axis{width:clamp(180px,18vw,236px)}
+.altitude-title{padding:11px 12px 2px;font-size:13px;letter-spacing:.04em}
+.altitude-scale{margin:16px 8px 18px 36px}
+.alt-tick{left:-36px;width:29px;font-size:10px}.alt-tick:after{right:-10px;width:6px}
+.altitude-list{width:calc(100% - 48px);padding:10px 7px 10px 0}
+.alt-row{align-items:center;gap:6px;margin-bottom:3px;padding:5px 6px;font-size:11px;line-height:1.35}
+.alt-row small{font-size:10px}.space-readout{padding:9px 14px;font-size:11px;min-height:34px}.space-foot{padding:7px 14px;font-size:10px}
+@media(max-width:1100px){.dashboard-spatial-card .space-viewport,.monitor-spatial-card .space-viewport{height:460px}.altitude-axis{width:180px}}
+@media(max-width:650px){.dashboard-spatial-card .space-viewport,.monitor-spatial-card .space-viewport{height:auto}.space-map{height:390px}.altitude-axis{width:100%;height:170px}.altitude-list{width:55%;padding-right:7px}.alt-row{font-size:10px;padding:4px 5px}}
+@media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+.logit-board{display:flex;flex-direction:column;gap:12px}
+.logit-task{border:1px solid #e3eaee;background:#f7fafb;padding:10px 12px}
+.logit-task-head{display:flex;justify-content:space-between;gap:8px;align-items:baseline;margin-bottom:8px}
+.logit-task-head b{color:#1b2730;font-size:16px}
+.logit-task-head span{color:#087e78;font-size:14px;white-space:nowrap}
+.logit-row{display:grid;grid-template-columns:52px 64px minmax(0,1fr);gap:8px;align-items:center;padding:6px 8px;border:1px solid transparent}
+.logit-row.selected{border-color:#9fd0ea;background:#e7f6fb}
+.logit-head{color:#5c6b76;font-size:14px}
+.logit-row.selected .logit-head{color:#087e78}
+.logit-value{font:600 14px ui-monospace,SFMono-Regular,Menlo,monospace;color:#1b2730;text-align:right}
+.logit-members{display:flex;flex-wrap:wrap;gap:6px}
+.logit-member{background:#eef3f6;color:#314049;border-radius:3px;padding:2px 6px;font-size:13px}
+.logit-member small{color:#147a92;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.logit-devices{width:100%;margin-top:8px;border-collapse:collapse;font-size:13px}
+.logit-devices th,.logit-devices td{padding:3px 6px;text-align:left;color:#314049;border-bottom:1px solid #e3eaee}
+.logit-devices td.num,.logit-devices th:not(:first-child){font-family:ui-monospace,SFMono-Regular,Menlo,monospace;text-align:right}
+@media(max-width:650px){.logit-row{grid-template-columns:44px 56px minmax(0,1fr)}}
