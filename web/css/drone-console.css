@@ -95,7 +95,7 @@ html[data-theme="dark"] .modal-head,html[data-theme="dark"] .modal-actions{borde
 html[data-theme="light"] .sidebar{background:#18232d;color:#cad3d9;border-color:#30404b}
 html[data-theme="light"] .nav-link{color:#b9c4cb}
 html[data-theme="light"] .nav-link:hover{background:#22313b;color:#fff}
-html[data-theme="light"] .nav-link.active{background:#253944;color:#fff;box-shadow:inset 3px 0 #35b4a8}
+html[data-theme="light"] .nav-link.active{background:#253944;color:#fff;box-shadow:none}
 html[data-theme="light"] .topbar{background:linear-gradient(113deg,#313e48,#1e2832 42%,#29323a);color:#e9f0f6}
 html[data-theme="light"] .page-wrap{padding:14px 16px 28px}
 
