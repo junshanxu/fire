@@ -271,7 +271,14 @@
       if(previous===next)return;
       node.dataset.value=String(next);
       node.classList.remove('is-up','is-down');
-      if(Number.isFinite(previous))node.classList.add(next>previous?'is-up':'is-down');
+      const row=node.closest('.alt-row');
+      row?.classList.remove('trend-up','trend-down');
+      if(Number.isFinite(previous)){
+        const rising=next>previous;
+        node.classList.add(rising?'is-up':'is-down');
+        const direction=rising?'up':'down';
+        row?.classList.add(`trend-${direction}`);
+      }
       const fresh=document.createElement('span');fresh.className='alt-value-current';fresh.textContent=`${next} m`;
       if(!Number.isFinite(previous)||matchMedia('(prefers-reduced-motion: reduce)').matches){node.replaceChildren(fresh);return;}
       const old=node.querySelector('.alt-value-current');
@@ -299,13 +306,13 @@
       }
       const activeIds=new Set(devices.map(item=>item.id));
       this.altitudeNotches.forEach((notch,id)=>{if(!activeIds.has(id)){notch.remove();this.altitudeNotches.delete(id);}});
-      devices.forEach(item=>{let notch=this.altitudeNotches.get(item.id);if(!notch){notch=document.createElement('i');notch.className='alt-notch';notch.dataset.altitudeNotch=item.id;scale.append(notch);this.altitudeNotches.set(item.id,notch);}notch.style.bottom=`${(item.z/hi)*100}%`;notch.style.background=this.altTone(item.z,hi).fill;});
+      devices.forEach(item=>{let notch=this.altitudeNotches.get(item.id);if(!notch){notch=document.createElement('i');notch.className='alt-notch';notch.dataset.altitudeNotch=item.id;scale.append(notch);this.altitudeNotches.set(item.id,notch);}notch.style.bottom=`${(item.z/hi)*100}%`;notch.style.background=this.altTone(item.z,hi).fill;notch.style.color=this.altTone(item.z,hi).fill;notch.title=`${item.name} · ${Math.round(item.z)} m`;notch.classList.toggle('chosen',this.selected===item.id);});
       const before=new Map([...list.querySelectorAll('.alt-row')].map(row=>[row.dataset.altitudeDevice,row.getBoundingClientRect().top]));
       this.altitudeRows.forEach((row,id)=>{if(!activeIds.has(id)){row.remove();this.altitudeRows.delete(id);}});
       [...devices].sort((a,b)=>b.z-a.z||a.name.localeCompare(b.name,'zh-CN')).forEach(item=>{
         const tone=this.altTone(item.z,hi);let row=this.altitudeRows.get(item.id);
         if(!row){row=document.createElement('button');row.className='alt-row';row.dataset.altitudeDevice=item.id;const name=document.createElement('b');const value=document.createElement('small');value.className='alt-value';row.append(name,value);this.altitudeRows.set(item.id,row);}
-        row.querySelector('b').textContent=item.name;row.classList.toggle('chosen',this.selected===item.id);row.style.background=tone.fill;row.style.color=tone.ink;this.rollAltitudeValue(row.querySelector('.alt-value'),item.z);list.append(row);
+        row.querySelector('b').textContent=item.name;row.classList.toggle('chosen',this.selected===item.id);row.style.setProperty('--alt-fill',tone.fill);row.style.setProperty('--alt-ink',tone.ink);this.rollAltitudeValue(row.querySelector('.alt-value'),item.z);list.append(row);
       });
       if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
         this.altitudeRows.forEach((row,id)=>{const previous=before.get(id);if(previous==null)return;const delta=previous-row.getBoundingClientRect().top;if(Math.abs(delta)<1)return;row.getAnimations().forEach(animation=>animation.cancel());row.animate([{transform:`translateY(${delta}px)`,zIndex:2},{transform:'translateY(0)',zIndex:1}],{duration:520,easing:'cubic-bezier(.2,.72,.25,1)'});});

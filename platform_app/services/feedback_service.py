@@ -32,7 +32,7 @@ def create_feedback(payload: dict, tasks: list[dict]) -> dict:
         raise ValueError("反馈类型无效")
     if not message:
         raise ValueError("请填写反馈内容")
-    record = {"id": str(uuid4()), "task_id": task_id, "task_name": task["name"], "station": task["station"], "kind": kind, "message": message[:1000], "time": datetime.now().strftime("%H:%M"), "created_at": datetime.now().isoformat(timespec="seconds")}
+    record = {"id": str(uuid4()), "task_id": task_id, "task_name": task["name"], "station": task["station"], "kind": kind, "message": message[:1000], "time": datetime.now().strftime("%H:%M:%S"), "created_at": datetime.now().isoformat(timespec="seconds")}
     with _lock:
         records = list_feedback()
         records.insert(0, record)
@@ -92,7 +92,7 @@ _POINT_READINGS = {
 def _clock(moment: datetime) -> str:
     if moment.tzinfo is not None:
         moment = moment.astimezone()
-    return moment.strftime("%H:%M")
+    return moment.strftime("%H:%M:%S")
 
 
 def _started(task: dict) -> datetime:

@@ -132,13 +132,8 @@ button.resource-count{width:100%;border:1px solid #edf0f2;text-align:left;font:i
   .two-col,.detail-grid,.dashboard-grid,.monitor-bottom{grid-template-columns:1fr}
 }
 
-/* Keep navigation above the workspace and fit task status in one row. */
+/* Keep the established desktop sidebar; only compact task status rows. */
 body{min-width:0}
-.app-shell{display:block;min-width:0}
-.sidebar{position:sticky;top:0;z-index:20;display:flex;flex-direction:row;align-items:center;gap:18px;width:100%;min-height:52px;padding:6px 20px;border-right:0;border-bottom:1px solid var(--line)}
-.brand{flex:none;padding:0;white-space:nowrap;color:var(--ink)}
-#navigation{display:flex;align-items:center;gap:3px;min-width:0;overflow-x:auto}
-.nav-link{width:auto;flex:none;margin:0;padding:8px 12px;white-space:nowrap}
 .main-area{min-width:0}
 .task-card{padding:6px 12px 5px}
 .task-card header{align-items:center;gap:12px}
@@ -200,7 +195,7 @@ html[data-theme="light"] body{background:var(--bg);color:var(--ink);font:13px/1.
 html[data-theme="light"] .sidebar{background:var(--nav);color:#cad3d9;border-color:#30404b}
 html[data-theme="light"] .brand{color:#fff}
 .brand{display:flex;align-items:center;gap:10px}
-.brand-logo{width:32px;height:32px;border-radius:8px;background:#14857d;color:#fff;display:grid;place-items:center;font-size:17px;font-weight:700;flex:none}
+.brand-logo{width:32px;height:32px;border-radius:8px;background:#fff!important;color:#fff;display:grid;place-items:center;font-size:17px;font-weight:700;flex:none;padding:2px}
 .brand small{display:block;margin-top:2px;font-size:9px;line-height:1.1;letter-spacing:.5px;color:#8697a1}
 html[data-theme="light"] .nav-link{color:#b9c4cb;border-radius:7px}
 html[data-theme="light"] .nav-link:hover{background:#22313b;color:#fff}
@@ -214,3 +209,7 @@ html[data-theme="light"] .card-head{border-color:var(--line)}
 html[data-theme="light"] .task-blueprint{border-radius:6px}
 html[data-theme="light"] .task-advice{border-left-color:var(--teal)}
 @media(max-width:760px){html[data-theme="light"] .page-wrap{padding:12px 10px 24px}.brand small{display:none}.brand b{font-size:12px}}
+
+/* Optional desktop rail collapse; keep the page composition unchanged. */
+.sidebar{position:relative;transition:width .2s ease,padding .2s ease}.app-shell{transition:grid-template-columns .2s ease}.sidebar-toggle{position:absolute;z-index:4;top:18px;right:-12px;width:24px;height:24px;padding:0;border:1px solid #cbd5da;border-radius:50%;background:#fff;color:#3d5967;box-shadow:0 2px 6px #172b3a1a;font:600 18px/20px sans-serif;cursor:pointer}.sidebar-toggle:hover{border-color:#087e78;color:#087e78}.app-shell.sidebar-collapsed{grid-template-columns:68px minmax(0,1fr)}.sidebar-collapsed .sidebar{padding-left:8px;padding-right:8px}.sidebar-collapsed .brand{justify-content:center;padding-left:0;padding-right:0}.sidebar-collapsed .brand>span,.sidebar-collapsed .nav-caption,.sidebar-collapsed .sidebar-footer>span:not(.avatar){display:none}.sidebar-collapsed .nav-link{justify-content:center;gap:0;padding-left:0;padding-right:0;font-size:0}.sidebar-collapsed .nav-link i{font-size:15px}.metric-link{width:100%;border:1px solid var(--line);text-align:left;color:inherit;font:inherit;cursor:pointer;appearance:none;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}.metric-link:hover{border-color:#8fb8b4;box-shadow:0 3px 10px #087e7814;transform:translateY(-1px)}.metric-link:focus-visible{outline:2px solid #087e78;outline-offset:2px}.metric-link .metric-label,.metric-link .metric-note{display:block}.metric-link .metric-value{display:block}
+@media(max-width:760px){.sidebar-toggle{display:none}.app-shell.sidebar-collapsed{grid-template-columns:1fr}.sidebar-collapsed .brand>span{display:block}.sidebar-collapsed .nav-link{justify-content:flex-start;gap:4px;padding:8px 6px;font-size:12px}}
