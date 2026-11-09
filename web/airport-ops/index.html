@@ -46,7 +46,7 @@ html.embed,html.embed body{height:100%;overflow:hidden;background:#10151a;color:
   <div class="workspace">
     <div class="main-column">
       <section class="panel viewport">
-        <div class="panel-heading"><div><span class="live-dot"></span><b id="view-title">航站楼 · 三维作业视图</b></div><div class="view-tabs" role="group" aria-label="场景视角"><button class="selected" data-view="overview">作业全景</button><button data-view="dog">机器狗视角</button><button data-view="drone">无人机视角</button><button id="fullscreen" aria-label="全屏显示场景">⛶</button></div></div>
+        <div class="panel-heading"><div><span class="live-dot"></span><b id="view-title">航站楼 · 三维作业视图</b></div><div class="view-tabs" role="group" aria-label="场景视角"><button id="fullscreen" aria-label="全屏显示场景">⛶</button></div></div>
         <div id="scene">
           <canvas id="overview" width="960" height="540" aria-label="航站楼三维作业画面"></canvas>
           <img id="scene-preview" src="/assets/airport/airport-preview.jpg" alt="" aria-hidden="true">
@@ -70,8 +70,8 @@ html.embed,html.embed body{height:100%;overflow:hidden;background:#10151a;color:
       <div class="section-title" id="fleet"><b>全队运行状态</b><small>3 DOG · 3 UAV · 2 AMR</small></div>
       <section class="devices" id="devices"></section>
       <section class="cameras">
-        <article class="panel"><div class="panel-heading"><b>DOG-01 · 前视画面</b><button class="text-button" data-view="dog">放大查看 ↗</button></div><canvas id="dog-camera" width="480" height="270" aria-label="机器狗前视画面"></canvas><div class="camera-caption">A 区配电设备 · 地面到点检查</div></article>
-        <article class="panel"><div class="panel-heading"><b>UAV-01 · 空中画面</b><button class="text-button" data-view="drone">放大查看 ↗</button></div><canvas id="drone-camera" width="480" height="270" aria-label="无人机空中画面"></canvas><div class="camera-caption">分层航线 · 6 / 7 / 8 m</div></article>
+        <article class="panel"><div class="panel-heading"><b>DOG-01 · 前视画面</b></div><canvas id="dog-camera" width="480" height="270" aria-label="机器狗前视画面"></canvas><div class="camera-caption">A 区配电设备 · 地面到点检查</div></article>
+        <article class="panel"><div class="panel-heading"><b>UAV-01 · 空中画面</b></div><canvas id="drone-camera" width="480" height="270" aria-label="无人机空中画面"></canvas><div class="camera-caption">分层航线 · 6 / 7 / 8 m</div></article>
       </section>
     </div>
     <aside>
@@ -139,8 +139,7 @@ function project(x,y,z) {
 function drawCameras() {
   if(video.readyState<2)return;
   // The atlas has the overview above two synchronized close-up cameras.
-  const crop=view==='overview'?[0,0,960,540]:view==='dog'?[0,540,480,270]:[480,540,480,270];
-  main.drawImage(video,...crop,0,0,960,540);
+  main.drawImage(video,0,0,960,540,0,0,960,540);
   dogCam.drawImage(video,0,540,480,270,0,0,480,270);
   droneCam.drawImage(video,480,540,480,270,0,0,480,270);
 }
@@ -209,9 +208,9 @@ function render(force=false) {
   drawOverlay(s);
 }
 function setView(v) {
-  view=v;
-  document.querySelectorAll('.view-tabs [data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===v));
-  $('#view-title').textContent={overview:'航站楼 · 三维作业视图',dog:'DOG-01 · 前视作业视图',drone:'UAV-01 · 空中作业视图'}[v];
+  if(v!=='overview')return;
+  view='overview';
+  $('#view-title').textContent='航站楼 · 三维作业视图';
   drawCameras(); render(true);
 }
 async function play() {
