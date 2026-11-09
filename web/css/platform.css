@@ -6,6 +6,17 @@
 .ai-plan .hint{line-height:1.7}
 [data-action="ai-dispatch"]{white-space:nowrap}
 
+/* Calm utility navigation: one solid selection, no decorative accent stripe. */
+.sidebar{background:#CCE7FF;color:#334b5a}
+.brand{color:#1b2730}
+.brand-logo{background:#fff;color:#1b2730}
+.brand small,.nav-caption,.sidebar-footer small{color:#4c6475}
+.nav-link{color:#334b5a}
+.nav-link:hover{background:#b7daf8;color:#17242d}
+.nav-link.active{background:#253944;color:#fff;box-shadow:none}
+.sidebar-footer{border-top-color:#a7cae5}
+.avatar.small{background:#000;color:#fff}
+
 .online-map{height:440px;background:#dce7e7}.dashboard-map.online-map{height:280px}.online-map .leaflet-popup-content{font-size:12px;line-height:1.7}.online-map .leaflet-tile-pane{filter:saturate(.8) contrast(1.02)}
 
 .dispatch-analysis{margin-bottom:14px}.dispatch-analysis .card-head{gap:10px}.decision-tag{padding:5px 9px;border-radius:12px;background:#eaf5f2;color:#167b68;font-size:10px}.candidate-chip{display:inline-block;margin:2px;padding:4px 7px;border-radius:10px;background:#f0f4f7;color:#53636d;font-size:9px}.ai-choice{color:#087e78}.analysis-empty{color:#bd6e48;font-size:10px}
