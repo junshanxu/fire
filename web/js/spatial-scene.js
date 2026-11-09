@@ -7,7 +7,7 @@
   const ICON_SRC={robot:'/assets/icons/robot.png',dog:'/assets/icons/robot-dog.png',drone:'/assets/icons/drone.png',person:'/assets/icons/person.png',alert:'/assets/icons/alert.png',patrol:'/assets/icons/patrol.png'};
   class SpatialScene {
     constructor(host){
-      this.host=host;this.canvas=host.querySelector('canvas');this.ctx=this.canvas.getContext('2d');
+      this.host=host;this.canvas=host.querySelector('canvas');this.ctx=this.canvas.getContext('2d');this.airportFrame=host.querySelector('[data-airport-ops]');
       this.data={resources:[],tasks:[],incidents:[],plan:null};this.positions=new Map();this.motionCache=new WeakMap();this.bendCache=new WeakMap();this.births=new Map();this.selected=null;
       this.zoom=.85;this.defaultZoom=.85;this.mode='road';this.showAll=false;this.locked=false;this.tiles=new Map();this.panX=0;this.panY=0;this.hit=[];this.last=0;this.lastAltitudePaint=0;this.mouse=null;
       this.icons={};Object.entries(ICON_SRC).forEach(([key,src])=>{const image=new Image();image.src=src;this.icons[key]=image;});
@@ -26,6 +26,7 @@
       host.querySelector('[data-show-all]').onclick=()=>{this.showAll=!this.showAll;this.refreshCount();};
       host.querySelector('[data-view-3d]').onclick=()=>this.setMode('road');
       host.querySelector('[data-view-satellite]').onclick=()=>this.setMode('satellite');
+      host.querySelector('[data-view-airport]').onclick=()=>this.setMode('airport');
       host.querySelector('[data-device-select]').onchange=e=>this.selected=e.target.value;
       host.addEventListener('click',event=>{const row=event.target.closest('[data-altitude-device]');if(!row)return;this.selected=row.dataset.altitudeDevice;const select=host.querySelector('[data-device-select]');if(select)select.value=this.selected;});
       this.setMode('road');
@@ -60,9 +61,14 @@
       return this.data.resources.filter(r=>show.has(r.id));
     }
     setMode(mode){
-      this.mode=mode==='satellite'?'satellite':'road';
+      this.mode=['satellite','airport'].includes(mode)?mode:'road';
+      const airport=this.mode==='airport';
+      this.host.classList.toggle('airport-mode',airport);
+      this.canvas.hidden=airport;
+      if(this.airportFrame){this.airportFrame.hidden=!airport;if(airport&&!this.airportFrame.src)this.airportFrame.src=this.airportFrame.dataset.src;}
       this.host.querySelector('[data-view-3d]').classList.toggle('active',this.mode==='road');
       this.host.querySelector('[data-view-satellite]').classList.toggle('active',this.mode==='satellite');
+      this.host.querySelector('[data-view-airport]').classList.toggle('active',airport);
     }
     sceneToLonLat(x,y){
       const z=15,world=2**z*256,lat0=this.centerLat*Math.PI/180;
@@ -313,7 +319,7 @@
       if(now-this.lastAltitudePaint>260){this.paintAltitude();this.lastAltitudePaint=now;}
     }
     badge(v,key,ring,size,chosen=false){const ctx=this.ctx,image=this.icons[key];ctx.save();ctx.translate(v.x,v.y);ctx.beginPath();ctx.fillStyle='rgba(255,255,255,.94)';ctx.arc(0,0,size*.58,0,Math.PI*2);ctx.fill();ctx.strokeStyle=chosen?'#264a5d':ring;ctx.lineWidth=chosen?1.6:1.2;ctx.stroke();if(image&&image.complete&&image.naturalWidth)ctx.drawImage(image,-size/2,-size/2,size,size);ctx.restore();}
-    frame(now){const elapsed=now-this.last;if(elapsed<33){this.raf=requestAnimationFrame(this.frame);return;}const dt=Math.min(.1,elapsed/1000||.033);this.last=now;if(document.visibilityState==='visible'&&this.host.isConnected&&this.w>0)this.draw(now,dt);this.raf=requestAnimationFrame(this.frame);}
+    frame(now){const elapsed=now-this.last;if(elapsed<33){this.raf=requestAnimationFrame(this.frame);return;}const dt=Math.min(.1,elapsed/1000||.033);this.last=now;if(this.mode!=='airport'&&document.visibilityState==='visible'&&this.host.isConnected&&this.w>0)this.draw(now,dt);this.raf=requestAnimationFrame(this.frame);}
     destroy(){cancelAnimationFrame(this.raf);this.resize.disconnect();}
   }
   window.SpatialScene=SpatialScene;

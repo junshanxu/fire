@@ -108,12 +108,39 @@ class PlatformHandler(BaseHTTPRequestHandler):
         file_path = resolve_static_path(url_path)
         if file_path is None:
             return self._send_json(404, {"error": "Not found"})
-        body = file_path.read_bytes()
-        self.send_response(200)
-        self.send_header("Content-Type", f"{content_type(file_path)}; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
+        size = file_path.stat().st_size
+        mime = content_type(file_path)
+        start, end, status = 0, size - 1, 200
+        range_header = self.headers.get("Range")
+        if file_path.suffix.lower() == ".mp4":
+            if range_header and range_header.startswith("bytes="):
+                requested = range_header.removeprefix("bytes=").split(",", 1)[0]
+                left, _, right = requested.partition("-")
+                try:
+                    start = int(left) if left else 0
+                    end = int(right) if right else size - 1
+                except ValueError:
+                    start = size
+            if start >= size:
+                self.send_response(416)
+                self.send_header("Content-Range", f"bytes */{size}")
+                self.end_headers()
+                return
+            # Keep each function response below Vercel's 4.5 MB payload limit.
+            end = min(end, size - 1, start + 4_000_000 - 1)
+            status = 206
+        length = end - start + 1
+        self.send_response(status)
+        self.send_header("Content-Type", f"{mime}; charset=utf-8" if mime.startswith("text/") or mime in ("application/javascript", "application/json", "image/svg+xml") else mime)
+        self.send_header("Content-Length", str(length))
+        if file_path.suffix.lower() == ".mp4":
+            self.send_header("Accept-Ranges", "bytes")
+            self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            self.send_header("Cache-Control", "public, max-age=31536000, immutable")
         self.end_headers()
-        self.wfile.write(body)
+        with file_path.open("rb") as source:
+            source.seek(start)
+            self.wfile.write(source.read(length))
 
     def _send_json(self, status: int, payload):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
