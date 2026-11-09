@@ -6,7 +6,7 @@
   ],
   "functions": {
     "api/index.py": {
-      "includeFiles": "{platform_app/**,sample_data/**,web/**}",
+      "includeFiles": "{platform_app/**,sample_data/**}",
       "maxDuration": 30
     }
   }
