@@ -28,7 +28,7 @@
       host.querySelector('[data-view-satellite]').onclick=()=>this.setMode('satellite');
       host.querySelector('[data-view-airport]').onclick=()=>this.setMode('airport');
       host.querySelector('[data-device-select]').onchange=e=>this.selected=e.target.value;
-      this.onAirportMessage=event=>{if(!this.airportFrame||event.origin!==location.origin||event.source!==this.airportFrame.contentWindow||event.data?.type!=='airport-scene-ready')return;setTimeout(()=>{this.airportReady=true;this.host.classList.remove('airport-loading');},5000);};
+      this.onAirportMessage=event=>{if(!this.airportFrame||event.origin!==location.origin||event.source!==this.airportFrame.contentWindow||event.data?.type!=='airport-scene-ready')return;this.airportReady=true;this.host.classList.remove('airport-loading');};
       window.addEventListener('message',this.onAirportMessage);
       host.addEventListener('click',event=>{const row=event.target.closest('[data-altitude-device]');if(!row)return;this.selected=row.dataset.altitudeDevice;const select=host.querySelector('[data-device-select]');if(select)select.value=this.selected;});
       this.setMode('road');
