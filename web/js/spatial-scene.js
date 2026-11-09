@@ -28,7 +28,8 @@
       host.querySelector('[data-view-satellite]').onclick=()=>this.setMode('satellite');
       host.querySelector('[data-view-airport]').onclick=()=>this.setMode('airport');
       host.querySelector('[data-device-select]').onchange=e=>this.selected=e.target.value;
-      if(this.airportFrame)this.airportFrame.addEventListener('load',()=>{this.airportReady=true;this.host.classList.remove('airport-loading');});
+      this.onAirportMessage=event=>{if(!this.airportFrame||event.origin!==location.origin||event.source!==this.airportFrame.contentWindow||event.data?.type!=='airport-scene-ready')return;setTimeout(()=>{this.airportReady=true;this.host.classList.remove('airport-loading');},5000);};
+      window.addEventListener('message',this.onAirportMessage);
       host.addEventListener('click',event=>{const row=event.target.closest('[data-altitude-device]');if(!row)return;this.selected=row.dataset.altitudeDevice;const select=host.querySelector('[data-device-select]');if(select)select.value=this.selected;});
       this.setMode('road');
       this.frame=this.frame.bind(this);this.raf=requestAnimationFrame(this.frame);
@@ -322,7 +323,7 @@
     }
     badge(v,key,ring,size,chosen=false){const ctx=this.ctx,image=this.icons[key];ctx.save();ctx.translate(v.x,v.y);ctx.beginPath();ctx.fillStyle='rgba(255,255,255,.94)';ctx.arc(0,0,size*.58,0,Math.PI*2);ctx.fill();ctx.strokeStyle=chosen?'#264a5d':ring;ctx.lineWidth=chosen?1.6:1.2;ctx.stroke();if(image&&image.complete&&image.naturalWidth)ctx.drawImage(image,-size/2,-size/2,size,size);ctx.restore();}
     frame(now){const elapsed=now-this.last;if(elapsed<33){this.raf=requestAnimationFrame(this.frame);return;}const dt=Math.min(.1,elapsed/1000||.033);this.last=now;if(this.mode!=='airport'&&document.visibilityState==='visible'&&this.host.isConnected&&this.w>0)this.draw(now,dt);this.raf=requestAnimationFrame(this.frame);}
-    destroy(){cancelAnimationFrame(this.raf);this.resize.disconnect();}
+    destroy(){cancelAnimationFrame(this.raf);this.resize.disconnect();window.removeEventListener('message',this.onAirportMessage);}
   }
   window.SpatialScene=SpatialScene;
 })();

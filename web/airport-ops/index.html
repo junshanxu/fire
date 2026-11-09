@@ -247,5 +247,8 @@ video.addEventListener('error',()=>{$('#load-state').innerHTML='<b>画面加载�
 function tick(now){if(now-tickAt>65){tickAt=now;drawCameras();render();}requestAnimationFrame(tick);}
 render(true);requestAnimationFrame(tick);
 if(video.readyState>=2){ready=true;$('#load-state').hidden=true;if(video.currentTime<PREVIEW_TIME)video.currentTime=PREVIEW_TIME;else{drawCameras();render(true);}}
+const scenePreview=$('#scene-preview');
+const notifyParent=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{if(window.parent!==window)window.parent.postMessage({type:'airport-scene-ready'},location.origin);}));
+if(scenePreview.complete)notifyParent();else scenePreview.addEventListener('load',notifyParent,{once:true});
 </script>
 </body></html>
