@@ -12,3 +12,6 @@ venv/
 # Logs and temporary files
 *.log
 *.tmp
+
+# Generated on Vercel so static files are served from the CDN.
+/public/

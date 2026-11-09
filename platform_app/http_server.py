@@ -1,4 +1,5 @@
 import json
+import os
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlsplit
@@ -112,7 +113,10 @@ class PlatformHandler(BaseHTTPRequestHandler):
         mime = content_type(file_path)
         start, end, status = 0, size - 1, 200
         range_header = self.headers.get("Range")
-        if file_path.suffix.lower() == ".mp4":
+        # Vercel functions cannot return more than 4.5 MB. The CDN copy in
+        # public/ is the normal path; this cap only applies if the function
+        # still has to serve the recording.
+        if file_path.suffix.lower() == ".mp4" and os.environ.get("VERCEL"):
             if range_header and range_header.startswith("bytes="):
                 requested = range_header.removeprefix("bytes=").split(",", 1)[0]
                 left, _, right = requested.partition("-")
@@ -133,7 +137,7 @@ class PlatformHandler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", f"{mime}; charset=utf-8" if mime.startswith("text/") or mime in ("application/javascript", "application/json", "image/svg+xml") else mime)
         self.send_header("Content-Length", str(length))
-        if file_path.suffix.lower() == ".mp4":
+        if file_path.suffix.lower() == ".mp4" and os.environ.get("VERCEL"):
             self.send_header("Accept-Ranges", "bytes")
             self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
             self.send_header("Cache-Control", "public, max-age=31536000, immutable")
